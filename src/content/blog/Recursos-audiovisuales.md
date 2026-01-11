@@ -1,7 +1,7 @@
 ---
 title: 'Recursos audiovisuales'
 description: 'Una lista extensa para ayudarte en tus necesidades audiovisuales'
-pubDate: 2024-03-08
+updatedDate: 2025-01-10
 image: ''
 tags: ["blog", "astro"]
 ---
@@ -16,6 +16,7 @@ Una lista de recursos útiles para el ámbito audiovisual.
 - [Khroma - AI Color Tool for Designers | Discover and Save Color Palettes](https://www.khroma.co/)
 - [Goyo Voice Separator](https://goyo.app/)
 - [Adobe Podcast | AI audio recording and editing, all on the web](https://podcast.adobe.com/)
+- [Moises AI](https://moises.ai/)
 ## Música y Efectos de Sonido
 - [Soundly - The Complete Sound Effect Platform](https://getsoundly.com/) ⭐️
 - [Musicbed - Music Licensing for Video, Film & Advertising](https://www.musicbed.com/) ⭐️
@@ -47,6 +48,7 @@ Una lista de recursos útiles para el ámbito audiovisual.
 ## Correción de color
 - [Color.io - Analog Photo Editor & Look Designer](https://www.color.io/)
 - [Dehancer OFX plugins for DaVinci Resolve](https://www.dehancer.com/shop/video/davinci_resolve)
+- [Filmkid LUTs](https://filmkid.com/)
 ## Stock Vídeo
 - [Mixkit - Awesome free assets for your next video project](https://mixkit.co/) ⭐️
 ## Inspiración para diseño

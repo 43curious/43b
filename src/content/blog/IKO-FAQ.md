@@ -1,14 +1,12 @@
 ---
 title: 'FAQ audiovisual'
 description: 'Una glosario técnico para editar'
-pubDate: 2024-02-08
+updatedDate: 2026-01-10
 image: ''
 tags: ["blog", "astro"]
 ---
 
-
-
-> TL;DR Esta guía pretende resolver dudas frecuentes y básicas sobre el ámbito audiovisual. Todo lo que explico a continuación tiene como base Da Vinci Resolve. Aunque muchas reglas se aplican a otros editores no-lineales como Premiere, Final Cut o Avid. Pero las funciones específicas que se mencionan igual pueden no tener equivalencia en otros programas. Si quieres saber más sobre [Final Cut](https://castro.eus/blog/fcpx/), tienes una guía también.
+> TL;DR Esta guía pretende resolver dudas frecuentes y básicas sobre el ámbito audiovisual. Todo lo que explico a continuación tiene como base DaVinci Resolve. Aunque muchas reglas se aplican a otros editores no-lineales como Adobe Premiere Pro, Final Cut Pro o Avid Media Composer. Pero las funciones específicas que se mencionan igual pueden no tener equivalencia en otros programas. Si quieres saber más sobre [Final Cut Pro](https://castro.eus/blog/fcpx/), tienes una guía también.
 
 ## ¿Qué formato uso para mis discos duros?
 
@@ -18,9 +16,9 @@ La manera en el que formateas tus discos es extremadamente importante. El sistem
 - Si **solo** usas Windows: [NTFS](https://es.wikipedia.org/wiki/NTFS) es lo más rápido y sencillo.
 - Y si usas los dos sistemas todo el rato = usa exFAT.
 
-Un par de notas sobre [exFAT](https://learn.microsoft.com/en-gb/windows/win32/fileio/exfat-specification). Este sistema de archivos es más lento que los demás y no tiene funciones de seguridad (carece de [Journaling](https://es.wikipedia.org/wiki/Journaling)). Es más propenso a corrupción de archivos y Da Vinci siempre suele imprimir el aviso "exFAT drive detected". A veces no queda más remedio porque ciclamos mucho entre sistemas diferentes. Pero pudiéndolo evitar, es preferible usar sistemas de archivos más modernos y seguros.
+Un par de notas sobre [exFAT](https://learn.microsoft.com/en-gb/windows/win32/fileio/exfat-specification). Este sistema de archivos es más lento que los demás y no tiene funciones de seguridad (carece de [Journaling](https://es.wikipedia.org/wiki/Journaling)). Es más propenso a corrupción de archivos y DaVinci siempre suele imprimir el aviso "exFAT drive detected". A veces no queda más remedio porque ciclamos mucho entre sistemas diferentes. Pero pudiéndolo evitar, es preferible usar sistemas de archivos más modernos y seguros.
 
-Incluyo a Linux porque igual hay alguien que edita en Da Vinci así. exFAT también es compatible con sus peros. NTFS también funciona instalando un paquete extra y si quieres algo nativo, [BTRFS](https://es.wikipedia.org/wiki/Btrfs) funciona bien también.
+Incluyo a Linux porque igual hay alguien que edita en DaVinci así. exFAT también es compatible con sus peros. NTFS también funciona instalando un paquete extra y si quieres algo nativo, [BTRFS](https://es.wikipedia.org/wiki/Btrfs) funciona bien también.
 
 Si buscas lo mejor, más óptimo y seguro sin ningún tipo de compromiso, un servidor con 3-4 discos en [RAID 5](https://es.wikipedia.org/wiki/RAID) con [ZFS](https://es.wikipedia.org/wiki/ZFS_%28sistema_de_archivos%29) es la mejor opción. ZFS es un sistema de archivos con maneras eficientes de conseguir redundancia y sin mucho sacrificio de velocidad. RAID 5 además nos permite perder hasta 1 disco por cada 4 y no perder ni un solo archivo.
 </details>
@@ -40,9 +38,9 @@ No es obligatorio seguir este método al pie de la letra. Pero por lo menos tene
 
 Tengo una guía sobre eso. Léela [aquí](https://castro.eus/blog/organizar)
 
-## ¿Cómo organizo mis proyectos en Da Vinci?
+## ¿Cómo organizo mis proyectos en DaVinci?
 
-Da Vinci usa librerías de proyecto para organizar sus archivos. Como hemos visto antes en los formatos de discos, lo ideal es no cambiar el tipo de formato y trabajar, si se puede de un mismo sistema o de un servidor común para múltiples sistemas.
+DaVinci usa librerías de proyecto para organizar sus archivos. Como hemos visto antes en los formatos de discos, lo ideal es no cambiar el tipo de formato y trabajar, si se puede de un mismo sistema o de un servidor común para múltiples sistemas.
 
 Para mí, solo tengo una regla de oro. **1 proyecto = 1 biblioteca**. No es inamovible, pero jamás he tenido ningún problema haciéndolo así.
 La estructura general suele verse de la siguiente manera:
@@ -115,7 +113,7 @@ Resumen: lossy para distribuir, lossless para grabar y editar.
 
 Antes de comenzar, es recomendable tener una exportación máster en la calidad más grande posible. Por ejemplo: Apple ProRes 4444 o DnxHR 444.
 
-Si bien en un ámbito profesional lo óptimo sería guardar el proyecto entero tal y como está, a veces podemos tomarnos la libertad de optimizar espacio y borrar ciertos brutos. Aparte del vídeo final, es recomendable tener otras variantes guardadas que no ocupan demasiado espacio. Da Vinci (al igual que otros programas de exportación) nos da muchas opciones para renderizar muchos másteres para entrega. Podemos aprovechar esta característica para renderizar a la vez estas 6 variantes:
+Si bien en un ámbito profesional lo óptimo sería guardar el proyecto entero tal y como está, a veces podemos tomarnos la libertad de optimizar espacio y borrar ciertos brutos. Aparte del vídeo final, es recomendable tener otras variantes guardadas que no ocupan demasiado espacio. DaVinci (al igual que otros programas de exportación) nos da muchas opciones para renderizar muchos másteres para entrega. Podemos aprovechar esta característica para renderizar a la vez estas 6 variantes:
 
 - PROYECTO MÁSTER
 - PROYECTO MÁSTER SIN GRÁFICOS

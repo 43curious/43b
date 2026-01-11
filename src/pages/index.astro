@@ -1,167 +1,195 @@
 ---
-import { getCollection } from "astro:content"
-import Main from '../layouts/Main.astro'
-import ArticleCard from '../components/ArticleCard.astro'
+import { getCollection } from "astro:content";
+import Main from "../layouts/Main.astro";
+import ArticleCard from "../components/ArticleCard.astro";
 import ExperimentCard from "../components/ExperimentCard.astro";
 /*Sorting the experiments from newest to oldest */
-const allPosts = (await getCollection("blog")).sort(
-  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+const allPosts = (await getCollection("blog")).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title),
 );
 
-const allExperiments = (await getCollection("experiments")).sort(
-  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+const allExperiments = (await getCollection("experiments")).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title),
 );
 ---
 
 <Main title="castro">
-    <body class="text-white">
+  <body class="text-white">
     <div class="mt-20 element animated-text">
       <p class="px-2 font-bold">Jon Castro.</p>
-          <p class="px-2 mb-8 text-neutral-400">
-        Grabo, edito, escribo y programo. Me gusta usar y crear herramientas. Esta es mi colección de guías, un reflejo de todo lo que sé y me interesa.  
-          </p>
+      <p class="px-2 mb-8 text-neutral-400">
+        Me gusta usar y crear herramientas. Esta es mi colección de guías, un
+        reflejo de todo lo que sé y me interesa.
+      </p>
     </div>
-        <div class="container mb-10">
-            <div class="tabs relative">
-                <!-- Tab Menu -->
-                <input type="radio" name="tab" id="tab-1" checked class="tab-switch hidden">
-                <label for="tab-1" class="tab-label ml-4">Guías</label>
+    <div class="container mb-10">
+      <div class="tabs relative">
+        <!-- Tab Menu -->
+        <input
+          type="radio"
+          name="tab"
+          id="tab-1"
+          checked
+          class="tab-switch hidden"
+        />
+        <label for="tab-1" class="tab-label ml-4">Guías</label>
 
-                <input type="radio" name="tab" id="tab-2" class="tab-switch hidden">
-                <label for="tab-2" class="tab-label ml-10">Experimentos</label>
+        <input type="radio" name="tab" id="tab-2" class="tab-switch hidden" />
+        <label for="tab-2" class="tab-label ml-10">Experimentos</label>
 
-                <!-- Guías Content -->
-                <div class="tab-content">
-                    <!-- Content for Guías -->
-                    <div class="article-cards">
-                        <!-- Example Article Card -->
-                        {allPosts.map((p) => <ArticleCard blog={p}/>)}
-                    </div>
-                </div>
-
-                <!-- Experimentos Content -->
-                <div class="tab-content">
-                    <!-- Content for Experimentos -->
-                    <div class="experiment-cards">
-                        {allExperiments.map((p) => <ExperimentCard experiments={p}/>)}
-                    </div>
-                </div>
-            </div>
-    </div>
-     <div class="pb-20">
-        <hr class="mb-6 mx-1.5" />
-      <div class="flex justify-center">
-              <a  id="github" class="font-black" target="_blank" href="https://github.com/43castro"><svg class="" data-testid="geist-icon" height="23" stroke-linejoin="round" viewBox="0 0 16 16" width="23" style="color: currentcolor;"><g clip-path="url(#clip0_872_3147)"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C3.58 0 0 3.57879 0 7.99729C0 11.5361 2.29 14.5251 5.47 15.5847C5.87 15.6547 6.02 15.4148 6.02 15.2049C6.02 15.0149 6.01 14.3851 6.01 13.7154C4 14.0852 3.48 13.2255 3.32 12.7757C3.23 12.5458 2.84 11.836 2.5 11.6461C2.22 11.4961 1.82 11.1262 2.49 11.1162C3.12 11.1062 3.57 11.696 3.72 11.936C4.44 13.1455 5.59 12.8057 6.05 12.5957C6.12 12.0759 6.33 11.726 6.56 11.5261C4.78 11.3262 2.92 10.6364 2.92 7.57743C2.92 6.70773 3.23 5.98797 3.74 5.42816C3.66 5.22823 3.38 4.40851 3.82 3.30888C3.82 3.30888 4.49 3.09895 6.02 4.1286C6.66 3.94866 7.34 3.85869 8.02 3.85869C8.7 3.85869 9.38 3.94866 10.02 4.1286C11.55 3.08895 12.22 3.30888 12.22 3.30888C12.66 4.40851 12.38 5.22823 12.3 5.42816C12.81 5.98797 13.12 6.69773 13.12 7.57743C13.12 10.6464 11.25 11.3262 9.47 11.5261C9.76 11.776 10.01 12.2558 10.01 13.0056C10.01 14.0752 10 14.9349 10 15.2049C10 15.4148 10.15 15.6647 10.55 15.5847C12.1381 15.0488 13.5182 14.0284 14.4958 12.6673C15.4735 11.3062 15.9996 9.67293 16 7.99729C16 3.57879 12.42 0 8 0Z" fill="black"></path>
-                            </g>
-                            <defs>
-                            <clipPath id="clip0_872_3147">
-                            <rect width="20" height="20" fill="white"></rect>
-                            </clipPath>
-                            </defs></svg>GitHub</a>
-              </div>
+        <!-- Guías Content -->
+        <div class="tab-content">
+          <!-- Content for Guías -->
+          <div class="article-cards">
+            <!-- Example Article Card -->
+            {allPosts.map((p) => <ArticleCard blog={p} />)}
           </div>
-    </body>
+        </div>
+
+        <!-- Experimentos Content -->
+        <div class="tab-content">
+          <!-- Content for Experimentos -->
+          <div class="experiment-cards">
+            {allExperiments.map((p) => <ExperimentCard experiments={p} />)}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pb-20">
+      <hr class="mb-6 mx-1.5" />
+      <div class="flex justify-center">
+        <a
+          id="github"
+          class="font-black"
+          target="_blank"
+          href="https://github.com/43castro"
+          ><svg
+            class=""
+            data-testid="geist-icon"
+            height="23"
+            stroke-linejoin="round"
+            viewBox="0 0 16 16"
+            width="23"
+            style="color: currentcolor;"
+            ><g clip-path="url(#clip0_872_3147)"
+              ><path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M8 0C3.58 0 0 3.57879 0 7.99729C0 11.5361 2.29 14.5251 5.47 15.5847C5.87 15.6547 6.02 15.4148 6.02 15.2049C6.02 15.0149 6.01 14.3851 6.01 13.7154C4 14.0852 3.48 13.2255 3.32 12.7757C3.23 12.5458 2.84 11.836 2.5 11.6461C2.22 11.4961 1.82 11.1262 2.49 11.1162C3.12 11.1062 3.57 11.696 3.72 11.936C4.44 13.1455 5.59 12.8057 6.05 12.5957C6.12 12.0759 6.33 11.726 6.56 11.5261C4.78 11.3262 2.92 10.6364 2.92 7.57743C2.92 6.70773 3.23 5.98797 3.74 5.42816C3.66 5.22823 3.38 4.40851 3.82 3.30888C3.82 3.30888 4.49 3.09895 6.02 4.1286C6.66 3.94866 7.34 3.85869 8.02 3.85869C8.7 3.85869 9.38 3.94866 10.02 4.1286C11.55 3.08895 12.22 3.30888 12.22 3.30888C12.66 4.40851 12.38 5.22823 12.3 5.42816C12.81 5.98797 13.12 6.69773 13.12 7.57743C13.12 10.6464 11.25 11.3262 9.47 11.5261C9.76 11.776 10.01 12.2558 10.01 13.0056C10.01 14.0752 10 14.9349 10 15.2049C10 15.4148 10.15 15.6647 10.55 15.5847C12.1381 15.0488 13.5182 14.0284 14.4958 12.6673C15.4735 11.3062 15.9996 9.67293 16 7.99729C16 3.57879 12.42 0 8 0Z"
+                fill="black"></path>
+            </g>
+            <defs>
+              <clipPath id="clip0_872_3147">
+                <rect width="20" height="20" fill="white"></rect>
+              </clipPath>
+            </defs></svg
+          >GitHub</a
+        >
+      </div>
+    </div>
+  </body>
 </Main>
 
 <style>
-    .container {
-        margin-top: 3em;
-        gap: 5em; /* Adjusted gap for better spacing */
-    }
+  .container {
+    margin-top: 3em;
+    gap: 5em; /* Adjusted gap for better spacing */
+  }
 
-    .tabs {
-        position: relative;
-    }
+  .tabs {
+    position: relative;
+  }
 
-    .tab-label {
-        font-size: 18px;
-        display: inline-block;
-        margin-bottom: 30px;
-        margin-top: 10px;
-        cursor: pointer;
-        opacity: 0.3; /* Default opacity for inactive tabs */
-        position: relative; /* Required for the ::after pseudo-element */
-        transition: opacity 0.25s ease;
-        user-select: none; /* Prevent text selection */
-        font-weight: 400;
-    }
+  .tab-label {
+    font-size: 18px;
+    display: inline-block;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    cursor: pointer;
+    opacity: 0.3; /* Default opacity for inactive tabs */
+    position: relative; /* Required for the ::after pseudo-element */
+    transition: opacity 0.25s ease;
+    user-select: none; /* Prevent text selection */
+    font-weight: 400;
+  }
 
-    .tab-label::after {
-        content: "";
-        position: absolute;
-        bottom: -5px; /* Position just below the text */
-        left: 0;
-        width: 0; /* Hidden by default */
-        height: 1px; /* Thickness of the underline */
-        background-color: currentColor; /* Matches the text color */
-        transition: width 0.3s ease;
-    }
+  .tab-label::after {
+    content: "";
+    position: absolute;
+    bottom: -5px; /* Position just below the text */
+    left: 0;
+    width: 0; /* Hidden by default */
+    height: 1px; /* Thickness of the underline */
+    background-color: currentColor; /* Matches the text color */
+    transition: width 0.3s ease;
+  }
 
-    .tab-label:hover::after {
-        width: 100%; /* Expand the underline on hover */
-    }
+  .tab-label:hover::after {
+    width: 100%; /* Expand the underline on hover */
+  }
 
-    /* Active tab opacity and underline */
-    .tab-switch:checked + .tab-label {
-        opacity: 1; /* Full opacity for the active tab */
-    }
+  /* Active tab opacity and underline */
+  .tab-switch:checked + .tab-label {
+    opacity: 1; /* Full opacity for the active tab */
+  }
 
-    .tab-switch:checked + .tab-label::after {
-        width: 100%; /* Keep the underline visible for the active tab */
-    }
+  .tab-switch:checked + .tab-label::after {
+    width: 100%; /* Keep the underline visible for the active tab */
+  }
 
-    .tab-content {
-        display: none; /* Hide all content by default */
-        width: 100%;
-        margin-top: 0.5em;
-        border-radius: 8px;
-        color: #fff;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-        animation: fadeInUp 0.5s ease-in-out;
-    }
-
-    #tab-2{
-      margin-left: 10px;
-    }
-
-    /* Show content for the selected tab */
-    #tab-1:checked ~ .tab-content:nth-of-type(1),
-    #tab-2:checked ~ .tab-content:nth-of-type(2) {
-        display: block; /* Show corresponding content */
-        opacity: 1; /* Make it visible */
-        transition: opacity 0.5s ease-in-out;
-    }
-
-
-    /* Initial state: invisible and slightly scaled down */
-.animate-appearance {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-/* When the element becomes visible */
-.animate-appearance.visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* To trigger the animation on scroll */
-@keyframes fadeInUp {
-  0% {
+  .tab-content {
+    display: none; /* Hide all content by default */
+    width: 100%;
+    margin-top: 0.5em;
+    border-radius: 8px;
+    color: #fff;
     opacity: 0;
-    transform: translateY(20px);
-    filter: blur(5px); /* Initial blur */
+    transition: opacity 0.5s ease-in-out;
+    animation: fadeInUp 0.5s ease-in-out;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0); /* No blur at the end */
-  }
-}
 
-.element {
-        animation: fadeInUp 0.8s ease-in-out;
-}
-   </style>
+  #tab-2 {
+    margin-left: 10px;
+  }
+
+  /* Show content for the selected tab */
+  #tab-1:checked ~ .tab-content:nth-of-type(1),
+  #tab-2:checked ~ .tab-content:nth-of-type(2) {
+    display: block; /* Show corresponding content */
+    opacity: 1; /* Make it visible */
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  /* Initial state: invisible and slightly scaled down */
+  .animate-appearance {
+    opacity: 0;
+    transform: scale(0.95);
+    transition:
+      opacity 1s ease,
+      transform 1s ease;
+  }
+
+  /* When the element becomes visible */
+  .animate-appearance.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* To trigger the animation on scroll */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(5px); /* Initial blur */
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0); /* No blur at the end */
+    }
+  }
+
+  .element {
+    animation: fadeInUp 0.8s ease-in-out;
+  }
+</style>

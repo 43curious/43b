@@ -1,19 +1,17 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
 type Props = {
-    experiments: CollectionEntry<"experiments">;
+  experiments: CollectionEntry<"experiments">;
 };
 const { experiments } = Astro.props;
-const { title, pubDate } = experiments.data;
+const { title } = experiments.data;
 ---
 
 <a
   href={`/experiments/${experiments.slug}`}
   class="text-black font-bold py-2.5 px-4 transition ease-in-out delay-50 hover:cursor-pointer text-xl gap-4
-         flex flex-col sm:flex-row w-full sm:w-fit">
-  <time class="opacity-50 font-light hidden sm:flex" datetime={pubDate.toISOString()}>
-    {`${pubDate.getFullYear()} · ${pubDate.getMonth() + 1}`}
-  </time>
+         flex flex-col sm:flex-row w-full sm:w-fit"
+>
   <span class="opacity-80 hover:opacity-100">
     {title}
   </span>

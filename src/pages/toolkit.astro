@@ -1,245 +1,67 @@
 ---
 import Main from "../layouts/Main.astro";
-import "../styles/global.css";
 ---
 
-<title>Toolkit - Castro</title>
-<Main>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <title>Toolkit - Castro</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
-      /* Floating pixel preview */
-      .pixel-preview {
-        position: fixed;
-        pointer-events: none;
-        width: 96px;
-        height: 96px;
-        transform: translate(-50%, -120%);
-        transition: opacity 120ms ease, transform 120ms ease;
-        opacity: 0;
-        z-index: 9999;
-        image-rendering: pixelated;
-        image-rendering: crisp-edges;
-        border-radius: 8px;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-        will-change: transform, opacity, left, top;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
+<Main title="Toolkit - Castro">
+  <h2>Toolkit</h2>
+  <p class="px-2 mb-8">
+    Estas son las herramientas que uso ahora mismo. Las voy actualizando
+    periódicamente. Por si a alguien le interesa.
+  </p>
 
-      .pixel-preview.visible {
-        opacity: 1;
-      }
+  <h4>Esenciales</h4>
+  <ul>
+    <li>
+      <a target="_blank" rel="noopener" href="https://culturedcode.com/things/"
+        >Things 3</a
+      >. La lista de tareas.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://zen-browser.app/"
+        >Zen Browser</a
+      >. El navegador.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://ghostty.org/">Ghostty</a>.
+      La terminal.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://obsidian.md/">Obsidian</a
+      >. Para tomar notas.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://www.qobuz.com/">Qobuz</a>.
+      Para música.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://shorturl.at/eMviG">SKHD</a
+      >. Navegación del sistema.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://neovim.io/">Neovim</a>.
+      Editor de texto.
+    </li>
+  </ul>
 
-      /* Optional: smaller on mobile */
-      @media (max-width: 640px) {
-        .pixel-preview {
-          width: 64px;
-          height: 64px;
-          transform: translate(-50%, -130%);
-        }
-      }
-
-      /* Styling for the toolkit content (kept minimal) */
-      main {
-        padding: 24px;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-          Arial;
-      }
-
-      a[data-pixel] {
-        position: relative;
-      }
-    </style>
-  </head>
-
-  <body>
-    <main>
-      <h2>Toolkit</h2>
-      <p class="px-2 mb-8">
-        Estas son las herramientas que uso ahora mismo. Las voy actualizando
-        periódicamente. Por si a alguien le interesa.
-      </p>
-
-      <h4>Productividad</h4>
-      <ul>
-        <li>
-          <a target="_blank" rel="noopener" href="https://culturedcode.com/things/"
-            data-pixel="/pixels/things.png"
-            >Things 3</a
-          >. La lista de tareas.
-        </li>
-        <li>
-          <a target="_blank" rel="noopener" href="https://zen-browser.app/"
-            data-pixel="/pixels/zen.png"
-            >Zen Browser</a
-          >. El navegador.
-        </li>
-        <li>
-          <a target="_blank" rel="noopener" href="https://obsidian.md/"
-            data-pixel="/pixels/obsidian.png"
-            >Obsidian</a
-          >. Para tomar notas.
-        </li>
-        <li>
-          <a target="_blank" rel="noopener" href="https://www.spotify.com/"
-            data-pixel="/pixels/spotify.png"
-            >Spotify</a
-          >. Para música.
-        </li>
-      </ul>
-
-      <h4>Vídeo</h4>
-      <ul>
-        <li>
-          <a target="_blank" rel="noopener"
-            href="https://www.apple.com/es/final-cut-pro/" data-pixel="/pixels/fcp.png"
-            >Final Cut Pro</a
-          >
-          y
-          <a href="https://www.blackmagicdesign.com/es/products/davinciresolve"
-            data-pixel="/pixels/davinci.png"
-            >DaVinci Resolve</a
-          >. Edición de vídeo.
-        </li>
-        <li>
-          <a target="_blank" rel="noopener" href="https://affinity.serif.com/es/"
-            data-pixel="/pixels/affinity.png"
-            >Affinity Designer</a
-          >. Diseño y gráficos.
-        </li>
-        <li>
-          <a target="_blank" rel="noopener" href="https://www.apple.com/logic-pro/"
-            data-pixel="/pixels/logic.png"
-            >Logic Pro</a
-          >. Música y sonido espacial.
-        </li>
-      </ul>
-
-      <h4>Terminal</h4>
-      <ul>
-        <li>
-          <a target="_blank" rel="noopener" href="https://ghostty.org/"
-            data-pixel="/pixels/ghostty.png"
-            >Ghostty</a
-          >. La terminal.
-        </li>
-        <li>
-          <a target="_blank" rel="noopener" href="https://shorturl.at/eMviG"
-            data-pixel="/pixels/skhd.png"
-            >SKHD</a
-          >. Navegación del sistema.
-        </li>
-        <li>
-          <a target="_blank" rel="noopener" href="https://neovim.io/"
-            data-pixel="/pixels/neovim.png"
-            >Neovim</a
-          >. Editor de texto.
-        </li>
-      </ul>
-    </main>
-
-    <!-- Floating preview element -->
-    <img class="pixel-preview" id="pixelPreview" src="" alt="" aria-hidden="true" />
-
-    <script type="module">
-      // Floating pixel preview behavior
-      // Listens for mouseenter/mousemove/mouseleave on elements with data-pixel
-      const preview = document.getElementById("pixelPreview");
-
-      // offset from cursor (you can tweak)
-      const offsetX = 12;
-      const offsetY = 18;
-
-      let currentTarget = null;
-
-      function showPreview(src, alt) {
-        preview.src = src;
-        preview.alt = alt || "";
-        preview.classList.add("visible");
-      }
-
-      function hidePreview() {
-        preview.classList.remove("visible");
-        // keep src to avoid reflow if re-shown soon
-      }
-
-      function onMouseEnter(e) {
-        const el = e.currentTarget;
-        const src = el.dataset.pixel;
-        if (!src) return;
-        currentTarget = el;
-        showPreview(src, el.textContent || el.href);
-      }
-
-      function onMouseMove(e) {
-        // position near cursor, but keep inside viewport
-        const vw = Math.max(document.documentElement.clientWidth || 0,
-          window.innerWidth || 0);
-        const vh = Math.max(document.documentElement.clientHeight || 0,
-          window.innerHeight || 0);
-
-        let left = e.clientX + offsetX;
-        let top = e.clientY + offsetY;
-
-        // keep a margin from right/bottom edges
-        const margin = 12;
-        const rect = preview.getBoundingClientRect();
-        if (left + rect.width + margin > vw) {
-          left = vw - rect.width - margin;
-        }
-        if (top + rect.height + margin > vh) {
-          top = e.clientY - rect.height - offsetY;
-        }
-
-        preview.style.left = left + "px";
-        preview.style.top = top + "px";
-      }
-
-      function onMouseLeave() {
-        currentTarget = null;
-        hidePreview();
-      }
-
-      function onFocus(e) {
-        // show preview centered above the focused link
-        const el = e.currentTarget;
-        const src = el.dataset.pixel;
-        if (!src) return;
-        const rect = el.getBoundingClientRect();
-        const left = rect.left + rect.width / 2;
-        const top = rect.top - 8;
-        preview.style.left = left + "px";
-        preview.style.top = top + "px";
-        showPreview(src, el.textContent || el.href);
-      }
-
-      function onBlur() {
-        hidePreview();
-      }
-
-      // Attach to all links with data-pixel
-      function initPixelPreviews() {
-        const nodes = document.querySelectorAll("a[data-pixel]");
-        nodes.forEach((node) => {
-          node.addEventListener("mouseenter", onMouseEnter);
-          node.addEventListener("mousemove", onMouseMove);
-          node.addEventListener("mouseleave", onMouseLeave);
-          node.addEventListener("focus", onFocus);
-          node.addEventListener("blur", onBlur);
-        });
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initPixelPreviews);
-      } else {
-        initPixelPreviews();
-      }
-    </script>
-  </body>
-  </html>
-
+  <h4>Creativos</h4>
+  <ul>
+    <li>
+      <a href="https://www.blackmagicdesign.com/es/products/davinciresolve"
+        >DaVinci Resolve</a
+      >. Edición de vídeo.
+    </li>
+    <li>
+      <a href="https://www.blender.org/">Blender</a>. 3D.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://www.affinity.studio/"
+        >Affinity</a
+      >. Diseño y gráficos.
+    </li>
+    <li>
+      <a target="_blank" rel="noopener" href="https://www.apple.com/logic-pro/"
+        >Logic Pro</a
+      >. Música y sonido espacial.
+    </li>
+  </ul>
 </Main>

@@ -1,7 +1,7 @@
 ---
 title: 'OrganizArt'
 description: 'Una guía explicativa sobre cómo construí atajos de organización'
-pubDate: 2024-08-04
+updatedDate: 2024-08-04
 image: ''
 tags: ["blog", "astro"]
 ---

@@ -5,24 +5,34 @@ import "../styles/global.css";
 ---
 
 <html lang="es" class="scroll-smooth">
-    <base target="_blank">
+    <base target="_blank" />
     <Main title={frontmatter.title} description={frontmatter.description}>
         <main class="">
             <div class="h-full w-full">
                 <div class="flex">
                     <div class="">
-                        <div class="font-bold sm:text-5xl text-4xl pb-4">{frontmatter.title}</div>
-                        <div class="font-medium opacity-80">
-                            <time class="opacity-75 px-1" datetime={frontmatter.pubDate.toISOString()}>
-                                {`${frontmatter.pubDate.getFullYear()} · ${frontmatter.pubDate.getMonth() + 1}`}
-                            </time>
-                      </div>
+                        <div class="font-bold sm:text-5xl text-4xl pb-4">
+                            {frontmatter.title}
+                        </div>
+                        <div class="font-medium opacity-75">
+                            {
+                                frontmatter.updatedDate && (
+                                    <div class="px-1 mt-1 text-md opacity-60">
+                                        Last updated:{" "}
+                                        {frontmatter.updatedDate.getFullYear()}{" "}
+                                        ·{" "}
+                                        {frontmatter.updatedDate.getMonth() + 1}
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
-                 </div>
-              <hr class="">
+                </div>
+                <hr class="" />
                 <article class="prose mb-20">
                     <slot />
                 </article>
             </div>
+        </main>
     </Main>
 </html>

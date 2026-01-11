@@ -1,16 +1,14 @@
 ---
 title: 'Final Cut Pro'
 description: 'Una guía para entender Final Cut Pro X'
-pubDate: 2024-04-08
+updatedDate: 2026-01-10
 image: ''
 tags: ["blog", "astro"]
 ---
 
 Si llevas un rato en mi blog te habrás dado cuenta de que organizar es muy importante para mí. Tanto para editores veteranos como principiantes que acaban de probar el programa, me gustaría compartir esta guía de cómo organizo yo mis librerías de Final Cut Pro. Cómo no solo ordeno, sino también cómo administro el caché y los archivos extra que genera el programa.
 
-
 ## Organización
-
 Final Cut Pro, utiliza librerías para organizar sus archivos. En este diagrama se muestra de manera bastante gráfica. Cada biblioteca debe tener mínimo un evento.
 Y dentro de cada evento guardamos clips y proyectos. Los clips pueden ordenarse no solo por nombre, sino también por palabra clave o colecciones inteligentes.
 
@@ -25,15 +23,15 @@ Con esta manera de organizar, siempre tendrás tus eventos creados por defecto p
 y cambiarle el nombre.
 
 Para mí, los archivos deberían de organizarse dentro del editor. El Finder debería tener la estructura de carpetas mínima y necesaria por si acaso. Pero la administración total de los datos
-debe estar hecha dentro de Final Cut. Todo esto que estoy diciendo ahora también es "prácticamente" aplicable a Da Vinci u otros editores. Es solo una manera de hacerlo, no la manera definitiva. Si quieres saber más sobre la estructura de carpetas y organización puedes visitar mi artículo sobre el [atajo](https://castro.eus/experiments/magic-folders).
+debe estar hecha dentro de Final Cut. Todo esto que estoy diciendo ahora también es "prácticamente" aplicable a DaVinci u otros editores. Es solo una manera de hacerlo, no la manera definitiva.
 
-Predico mucho que invertir tiempo en [organizar]() ahorra tiempo a la larga. Una vez dentro del editor, recomiendo usar las siguientes funciones para agilizar el proceso. Todas ellas basadas en [este vídeo](https://vimeo.com/194855528)
-de [Thomas Grove Carter](https://thomasgrovecarter.com/) que, si te gusta este programa, me parece obligatorio que veas.
+Predico mucho que invertir tiempo en [organizar](https://castro.eus/blog/organizar) ahorra tiempo a la larga. Una vez dentro del editor, recomiendo usar las siguientes funciones para agilizar el proceso. Todas ellas basadas en [este vídeo](https://vimeo.com/194855528)
+de [Thomas Grove Carter](https://thomasgrovecarter.com/) que, si te gusta este programa, me parece obligatorio verlo.
 - Aprende [atajos](https://support.apple.com/es-es/guide/final-cut-pro/ver90ba5929/mac), es vital. Los que más uso son:
   - Ripple Trim = `Option + [`
   - [Ajustar el punto de conexión de un clip conectado](https://support.apple.com/es-es/guide/final-cut-pro/ver7a77ef9e/mac)*
   - Mostrar/Ocultar ondas = `^ Control + ⌥ Option + ↑/↓ `
-  - Zoom in/out en el timeline = `⌘ + ' y ⌘ + ¡`
+  - Zoom in/out en el timeline = `⌘ + '` y `⌘ + ¡`
   - Zoom out para ver todo el timeline a la vez = `Shift ⇧ + Z`
 - Desactiva los paneles que no estés usando con los botones arriba a la derecha.
   - Para organizar, tener el timeline desactivado brinda más espacio para visualizar con más comodidad. Desactivar el inspector también es recomendable. Puedes usar
@@ -58,7 +56,7 @@ Si hay bibliotecas en las que se nos ha olvidado cambiar los ajustes anteriores,
 2. Clic en "Mostrar contenido del paquete"
 3. Nos metemos en la carpeta del evento que más ocupe
 4. Borramos los archivos
-5. Y después en Final Cut para volver a enlazarlos --> Archivo > Volver a enlazar Archivos
+5. Y después en Final Cut para volver a enlazarlos --> Archivo --> Volver a enlazar Archivos
 
 Nos pedirá el sitio donde queramos enlazarlo. Le señalamos nuestra carpeta y los volverá a sincronizar.
 

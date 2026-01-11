@@ -1,51 +1,77 @@
 ---
-title: 'Color management'
-description: 'Una guía para entender Final Cut Pro X'
-pubDate: 2024-08-08
+title: 'Guía de Gestión de Color'
+description: 'Entendiendo la ciencia del color en vídeo'
+updatedDate: 2026-01-10
 image: ''
 tags: ["blog", "astro"]
 ---
 
-El color es primero una ciencia y después un arte. Cada cual puede tener su manera y su *look* de cómo quiere que se vean sus vídeos. Pero para llegar a esa versión final la base debe de ser buena. Aquí explicaré, como pueda, las bases que deberías de entender sobre color. Siento de antemano si hay alguna errata.
-Gran parte de esta guía se basa en este vídeo de [Teams2Film](https://www.youtube.com/watch?v=w0ubDSzEEYg).
+El color en vídeo es primero ciencia y después arte. Antes de ponernos creativos y buscar un *look* específico, necesitamos asegurarnos de que lo que vemos es técnicamente correcto. 
 
-## ¿Qué es?
-El color management es una fase de administración de la imagen en la fase de edición.
+Aquí explicaré las bases del **Color Management** (Gestión de Color), un proceso fundamental para conseguir imágenes profesionales y consistentes. Esta guía está basada en mi experiencia y en recursos como este excelente vídeo de [Teams2Film](https://www.youtube.com/watch?v=w0ubDSzEEYg).
 
-A la hora de grabar, usamos una característica de la cámara llamada perfil de imagen. Esto es un conjunto de valores que usa la cámara para que al grabar, la imagen se vea de una manera u otra. Hay muchos perfiles de imagen, pero, hay uno, que nos interesa en especial.
+## ¿Qué es la Gestión de Color?
+Imagina la gestión de color como un **traductor universal**. 
 
-El perfil [Logarítmico](https://www.bhphotovideo.com/explora/video/tips-and-solutions/understanding-log-format-recording) o **LOG**, es un perfil de imagen plano. Sin mucho contraste ni saturación. Es un perfil con el que graban las la mayoría de cámaras profesionales. ¿Por qué se graba así? La respuesta corta, para preservar detalle. Se intentan salvar todo lo posible los puntos más negros y más blancos de la imagen para conseguir más información. Es decir, más rango dinámico. Esto nos da mucha más versatilidad en edición y hace que, en general, podamos conseguir un mejor resultado.
+Tu cámara y tu monitor hablan idiomas diferentes. Capturar imágenes y reproducirlas son dos tareas que requieren de herramientas diversas y, de una manera coherente de traducirlas entre sí. La gestión de color tiene, a mi parecer, dos objetivos fundamentales:
+- Capturar y preservar la mayor cantidad de información posible. 
+- Que todas las personas involucradas en el proceso vean lo mismo.
 
-Cada cámara tiene su perfil LOG. Canon tiene C-Log, Sony S-Log, Panasonic V-Log... Estos perfiles manejan ***cómo*** se captura una imagen.
+La gestión de color es el flujo de trabajo que asegura que esa traducción sea matemáticamente perfecta en tres etapas: **Entrada (Cámara)**, **Proceso (Edición)** y **Salida (Pantalla)**.
+
+---
+
+## Entrada: Perfiles Logarítmicos (LOG)
+La mayoría de cámaras profesionales y *prosumer* graban en lo que llamamos perfiles **Logarítmicos** (S-Log3 de Sony, C-Log de Canon, V-Log de Panasonic, etc.).
+
+Cuando grabamos algo, capturamos información de luz y color. Aquello que capturamos se *transforma* de valores matemáticos a pixeles. Los números se representan como una imagen (muy simplificado). Y en ese proceso, hay varias maneras de *transformar* los valores matemáticos que capturamos en imágenes completas. 
+
+- La primera forma es lineal. Cada valor de luz que captura el sensor corresponde de forma directa a un valor de color y de luz en la imagen final. 
+- La segunda forma es logarítmica. Los valores de altas luces y sombras se conservan. En vez de grabarse de manera lineal, se *aplanan* para conservar detalles. 
+
+### ¿Por qué se ven grises y planos?
+Cuando ves un archivo LOG sin procesar, se ve gris, con poco contraste y colores apagados. Esto no es un error; es una ventaja.
+- **Rango Dinámico**: Al "aplanar" la imagen, la cámara es capaz de guardar mucha más información en las sombras y en las luces altas sin perder detalle (clipping).
+- **Flexibilidad**: Es como un negativo digital. Tienes mucha más libertad para corregir la exposición y el color en post-producción sin romper la imagen.
+
+El perfil LOG es el "idioma nativo" de tu cámara.
+
+## Flujo de trabajo en DaVinci Resolve
+DaVinci Resolve es el estándar de la industria en gestión de color y entalonaje. Es importante entender que hay dos grandes caminos para gestionar el color: **Manual** y **Automático**.
+
+### Método Manual (DaVinci YRGB)
+Es el método que viene por defecto, el manual.
+- **Cómo funciona**: Tú eres responsable de todo. El proyecto no gestiona nada. Para convertir un clip LOG a Rec.709, debes añadir manualmente un nodo de efecto llamado **Color Space Transform (CST)** en cada clip o a nivel de timeline.
+- **Ventajas**: Control absoluto. Nada pasa sin que tú lo hagas.
+- **Desventajas**: Muy lento y cansado, sobre todo en proyectos largos.
+
+### Método Automático (DaVinci YRGB Color Managed)
+Aquí activamos el motor inteligente de DaVinci. Se hace desde `Project Settings > Color Management > DaVinci YRGB Color Managed`. Al activarlo, DaVinci lee los metadatos de tus archivos (si es RAW) o tu selección de espacio cromático inicial en base a tu cámara, y él se encarga de todas las transformaciones matemáticas en segundo plano.
+
+¿Qué pasa de fondo?
+En esencia, DaVinci está cambiando espacios de color, los está traduciendo. Para hacer esto, DaVinci utiliza un espacio de color de trabajo llamado DaVinci Wide Gamut Intermediate. ste espacio, es un espacio de color muy amplio que puede representar valores cromáticos y luminosos mayores que el espectro visible. Los cambios se hacen en este espacio de trabajo para conseguir la máxima flexibilidad. Pero la visualización final se hace en Rec.709. 
+
+Dentro del método automático, hay niveles de jerarquía:
+- **Nivel Proyecto**: Afecta a todo el proyecto. 
+- **Nivel Timeline** (Recomendado): Esta es la opción más moderna y flexible. Puedes configurar la gestión de color *por línea de tiempo*.
+
+### Mi Recomendación: Gestión por Timeline
+Esta opción nos da lo mejor de los dos mundos. Permite tener, en un mismo proyecto:
+- Una línea de tiempo en **Rec.709 SDR** (para YouTube).
+- Otra línea de tiempo en **Rec.2020 HDR** (para Netflix o TV moderna).
+
+Al hacer esto, tus clips LOG se verán automáticamente correctos y tendrás la flexibilidad profesional para entregar en cualquier formato.
+
+## Gamma shift 
 
 
-## ¿Por qué usarlo?
-Después de grabar, nos vamos a editar. Necesitamos una manera para transformar esos colores del proceso de grabación en algo que sea útil para editar. Da Vinci es la herramienta por excelencia que realiza este proceso y por lo que es tan buena. <br><br>
-Estos perfiles de imagen tienen un conjunto de valores preestablecidos por el fabricante que determina brillo y contraste. Da Vinci coge estos valores y tiene guardado la manera transformarlos. Si antes hablábamos de perfiles de imagen para grabar, ahora hablamos de espacios de color para reproducir. Un espacio de color es una manera de representar una gama de colores.
-</details>
 
+---
 
-## ¿Cómo se usa?
-Hay dos generales de espacio espacios de color:
-- Trabajo
-- Entrega
+## Resumen
 
-Los espacios de color de trabajo (por llamarlos así), son los que usamos para editar los colores de una imagen. Es el estado intermedio de una imagen y aquí es donde haremos las correcciones de color. Da Vinci usa dos: Da Vinci YRGB Color Managed y ACES. Uno de [Blackmagic Design](https://www.blackmagicdesign.com/) y otro de la [Academia de los Óscar](https://www.oscars.org/science-technology/sci-tech-projects/aces).
+- **Input**: La cámara captura el máximo detalle posible (LOG).
+- **Transformación**: El software convierte esos datos a un espacio de trabajo amplio.
+- **Output**: El software "revela" la imagen final compatible con las pantallas (Rec.709).
 
-Como resumen de ejemplo:
-- Hemos grabado en SLog-3 (Perfil logarítmico de una cámara Sony)
-- Hemos importado los clips a Da Vinci y vamos a transformar esos clips a un espacio de color de trabajo. (Da Vinci YRGB Color Managed)
-
-Al igual que un espacio de color de trabajo, tenemos que poner el espacio de color de entrega. El más común es Rec.709 para SDR y Rec.2020 para flujos de trabajo HDR.
-
-Esta transformación tan fácil es la manera correcta de administrar esos cambios de color de grabación a entrega, pasando por edición. Luego el *look* que le quiera dar cualquiera, a gusto del colorista. Pero así nos aseguramos que la base sea matemáticamente correcta.
-
-Los pasos técnicos son los siguientes:
-1. Importamos los clips de la cámara en LOG
-2. Abajo a la derecha en el engranaje (o shift+9) entramos a los ajustes del proyecto. Solo hay que meterse en `Color management > Color Science > DaVinci YRGB Color Managed` y marcar la casilla de "Automatic Color management". El `Output Color Space` debería de ser `Rec.709`.
-3. Si tenemos diferentes cámaras, podemos hacer clic derecho en los clips y elegir `Input Color Space`. Ahí podremos marcar qué perfil de imagen de entrada estamos usando.
-</details>
-
-## Detalles
-Todos estos pasos son una manera de realizar este proceso, nada es absoluto. En mi caso, me gusta llegar a editar con el color "hecho". Pero cuando se necesita un detalle muy bueno, excepcional, creo que es la manera más óptima de realizar en todo esto.
-</details>
+Entender esto te separa de los aficionados. Dejas de "arreglar" clips y empiezas a "revelar" imágenes.
