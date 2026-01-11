@@ -1,5 +1,5 @@
 ---
-title: 'Guía de Gestión de Color'
+title: 'Gestión de Color'
 description: 'Entendiendo la ciencia del color en vídeo'
 updatedDate: 2026-01-10
 image: ''
@@ -63,10 +63,19 @@ Esta opción nos da lo mejor de los dos mundos. Permite tener, en un mismo proye
 Al hacer esto, tus clips LOG se verán automáticamente correctos y tendrás la flexibilidad profesional para entregar en cualquier formato.
 
 ## Gamma shift 
+Uno de los problemas más comunes al trabajar en Mac es el **Gamma Shift**: exportas un vídeo que se ve perfecto en DaVinci, pero al abrirlo en QuickTime o subirlo a la web, la imagen se ve "lavada", con menos contraste y colores más pálidos.
 
+### ¿Por qué ocurre?
+El estándar de la industria para vídeo (Rec.709) utiliza un Gamma de **2.4**. Sin embargo, Apple utiliza su propio motor de gestión de color llamado **ColorSync**, que interpreta el contenido Rec.709 con un Gamma aproximado de **1.96**. Esa diferencia matemática es la que hace que las sombras se aclaren artificialmente al salir del entorno de edición.
 
+### La Solución
+Para que lo que ves en DaVinci coincida con lo que verás en el ecosistema de Apple, debes "hablar su idioma":
 
----
+1.  **Output Color Space**: En `Project Settings > Color Management`, establece el espacio de salida como **Rec.709 Scene**. Esto añade una etiqueta específica que ColorSync entiende correctamente.
+2.  **Preferencias de DaVinci**: Ve a `Preferences > System > General` y activa la casilla **"Use Mac Display Color Profiles for Viewers"**. Esto hará que el visor de DaVinci use el perfil de tu monitor Mac mientras trabajas.
+3.  **Tags de Exportación**: En la pestaña *Deliver*, asegúrate de que los "Gamma Tags" estén en `Same as Project` o explícitamente en `Rec.709`.
+
+Con esto, eliminas la incertidumbre y aseguras que tu contraste se mantenga intacto tras el render.
 
 ## Resumen
 

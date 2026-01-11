@@ -18,7 +18,7 @@ import "../styles/global.css";
                             {
                                 frontmatter.updatedDate && (
                                     <div class="px-1 mt-1 text-md opacity-60">
-                                        Last updated:{" "}
+                                        Actualizado:{" "}
                                         {frontmatter.updatedDate.getFullYear()}{" "}
                                         ·{" "}
                                         {frontmatter.updatedDate.getMonth() + 1}
@@ -35,4 +35,13 @@ import "../styles/global.css";
             </div>
         </main>
     </Main>
+    <script>
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                window.location.href = "/";
+            }
+        });
+    </script>
+
+
 </html>

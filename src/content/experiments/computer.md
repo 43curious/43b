@@ -10,9 +10,7 @@ Hay pocos programas instaladas en mi ordenador. Me gusta usar lo mínimo, optimi
 
 macOS es mi sistema principal. También uso Linux en mi servidor, Windows poco ya. Me quedo en macOS de momento por Apple Silicon. Muchísima potencia, batería de sobra y, sobre todo, silencio. Es discreto, no estorba en uso diario y puede con todo lo que le pido. Sobre todo con edición de vídeo y programación.
 
-Para conseguir que mi ordenador sea una extensión de mi mente y no un obstáculo, me baso en dos pilares fundamentales: **El Sistema** (cómo se instala y mantiene el software) y **El Flujo** (cómo interactúo con él).
-
----
+Para conseguir que mi ordenador sea una extensión de mi mente y no un obstáculo, me baso en dos pilares fundamentales: **El Sistema** (cómo se instala y mantiene el software) y **El Flujo** (cómo interactúo con él)
 
 ## El Sistema Declarativo
 
