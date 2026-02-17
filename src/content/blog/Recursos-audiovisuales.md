@@ -17,6 +17,7 @@ Una lista de recursos útiles para el ámbito audiovisual.
 - [Goyo Voice Separator](https://goyo.app/)
 - [Adobe Podcast | AI audio recording and editing, all on the web](https://podcast.adobe.com/)
 - [Moises AI](https://moises.ai/)
+- [Lochie Video Compression tools](https://compress.lochie.me/)
 ## Música y Efectos de Sonido
 - [Soundly - The Complete Sound Effect Platform](https://getsoundly.com/) ⭐️
 - [Musicbed - Music Licensing for Video, Film & Advertising](https://www.musicbed.com/) ⭐️
@@ -61,6 +62,7 @@ Una lista de recursos útiles para el ámbito audiovisual.
 - [Color.io - Analog Photo Editor & Look Designer](https://www.color.io/)
 - [Dehancer OFX plugins for DaVinci Resolve](https://www.dehancer.com/shop/video/davinci_resolve)
 - [Filmkid LUTs](https://filmkid.com/)
+- [Filmbox](https://videovillage.com/filmbox/)
 ## Stock Vídeo
 - [Mixkit - Awesome free assets for your next video project](https://mixkit.co/) ⭐️
 ## Inspiración para diseño
