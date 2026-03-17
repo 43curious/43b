@@ -12,7 +12,7 @@ export async function GET(context) {
 		site: context.site,
 		items: combinedPosts.map((post) => ({
 			...post.data,
-			link: post.collection === 'blog' ? `/blog/${post.slug}/` : `/experiments/${post.slug}/`,
+			link: post.collection === 'blog' ? `/blog/${post.id}/` : `/experiments/${post.id}/`,
 		})),
 	});
 }
