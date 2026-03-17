@@ -15,7 +15,7 @@ const allExperiments = (await getCollection("experiments")).sort((a, b) =>
 
 <Main title="castro">
   <body class="text-white">
-    <div class="mt-20 element animated-text">
+    <div class="mt-20 animated-text">
       <p class="px-2 font-bold">Jon Castro.</p>
       <p class="px-2 mb-8 text-neutral-400">
         Me gusta usar y crear herramientas. Esta es mi colección de guías, un
@@ -145,7 +145,6 @@ const allExperiments = (await getCollection("experiments")).sort((a, b) =>
     color: #fff;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
-    animation: fadeInUp 0.5s ease-in-out;
   }
 
   #tab-2 {
@@ -175,21 +174,5 @@ const allExperiments = (await getCollection("experiments")).sort((a, b) =>
     transform: scale(1);
   }
 
-  /* To trigger the animation on scroll */
-  @keyframes fadeInUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-      filter: blur(5px); /* Initial blur */
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-      filter: blur(0); /* No blur at the end */
-    }
-  }
 
-  .element {
-    animation: fadeInUp 0.8s ease-in-out;
-  }
 </style>
