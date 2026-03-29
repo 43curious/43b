@@ -1,0 +1,40 @@
+11:38:41 [content] Syncing content
+11:38:41 [content] Synced content
+11:38:41 [types] Generated 210ms
+11:38:41 [check] Getting diagnostics for Astro files in /Users/jon/Development/43b...
+[96msrc/pages/index-2.astro[0m:[93m355[0m:[93m18[0m - [91merror[0m[90m ts(7005): [0mVariable 'resizeTimer' implicitly has an 'any' type.
+
+[7m355[0m     clearTimeout(resizeTimer);
+[7m   [0m [91m                 ~~~~~~~~~~~[0m
+[96msrc/pages/index-2.astro[0m:[93m353[0m:[93m7[0m - [91merror[0m[90m ts(7034): [0mVariable 'resizeTimer' implicitly has type 'any' in some locations where its type cannot be determined.
+
+[7m353[0m   let resizeTimer;
+[7m   [0m [91m      ~~~~~~~~~~~[0m
+[96msrc/pages/index-2.astro[0m:[93m310[0m:[93m12[0m - [91merror[0m[90m ts(2339): [0mProperty 'style' does not exist on type 'Element'.
+
+[7m310[0m       cell.style.color = "";
+[7m   [0m [91m           ~~~~~[0m
+[96msrc/pages/index-2.astro[0m:[93m302[0m:[93m12[0m - [91merror[0m[90m ts(2339): [0mProperty 'style' does not exist on type 'Element'.
+
+[7m302[0m       cell.style.color = `hsl(${h}, 90%, ${Math.round(l)}%)`;
+[7m   [0m [91m           ~~~~~[0m
+[96msrc/pages/index-2.astro[0m:[93m294[0m:[93m21[0m - [91merror[0m[90m ts(7006): [0mParameter 'idx' implicitly has an 'any' type.
+
+[7m294[0m     active.forEach((idx) => {
+[7m   [0m [91m                    ~~~[0m
+[96msrc/pages/index-2.astro[0m:[93m287[0m:[93m19[0m - [91merror[0m[90m ts(7053): [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ faq: { icon: string; color: string; }; musica: { icon: string; color: string; }; utilidades: { icon: string; color: string; }; color: { icon: string; color: string; }; organizar: { icon: string; color: string; }; recursos: { ...; }; computer: { ...; }; astro: { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ faq: { icon: string; color: string; }; musica: { icon: string; color: string; }; utilidades: { icon: string; color: string; }; color: { icon: string; color: string; }; organizar: { icon: string; color: string; }; recursos: { ...; }; computer: { ...; }; astro: { ...; }; }'.
+
+[7m287[0m     const shape = SHAPES[shapeKey];
+[7m   [0m [91m                  ~~~~~~~~~~~~~~~~[0m
+[96msrc/pages/index-2.astro[0m:[93m219[0m:[93m20[0m - [91merror[0m[90m ts(7053): [0mElement implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly DaVinci_Resolve_Studio: readonly [readonly [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], readonly [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... 18 more ..., 0], ... 29 more ..., readonly [...]]; ... 7 more ...; readonly utilidades: readonly [...]; }'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly DaVinci_Resolve_Studio: readonly [readonly [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], readonly [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... 18 more ..., 0], ... 29 more ..., readonly [...]]; ... 7 more ...; readonly utilidades: readonly [...]; }'.
+
+[7m219[0m     const matrix = ICONS[name];
+[7m   [0m [91m                   ~~~~~~~~~~~[0m
+
+Result (29 files): 
+- 7 errors
+- 0 warnings
+- 0 hints
+

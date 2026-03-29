@@ -13,13 +13,7 @@ const allExperiments = (await getCollection("experiments")).sort((a, b) =>
 ---
 
 <div class="content-tabs">
-  <input
-    type="radio"
-    name="tab"
-    id="tab-1"
-    checked
-    class="tab-switch hidden"
-  />
+  <input type="radio" name="tab" id="tab-1" checked class="tab-switch hidden" />
   <input type="radio" name="tab" id="tab-2" class="tab-switch hidden" />
 
   <div class="tabs-nav mono">
@@ -48,32 +42,28 @@ const allExperiments = (await getCollection("experiments")).sort((a, b) =>
 
   .tabs-nav {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     margin-bottom: 32px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 1px;
   }
 
   .tab-label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: -0.5px;
     cursor: pointer;
     color: var(--dim);
-    padding-bottom: 12px;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    letter-spacing: -0.5px;
+    transition: all 0.15s;
   }
 
   .tab-label:hover {
     color: var(--text);
+    background: var(--hover);
   }
 
   #tab-1:checked ~ .tabs-nav label[for="tab-1"],
   #tab-2:checked ~ .tabs-nav label[for="tab-2"] {
     color: var(--text);
-    border-bottom-color: var(--text);
+    background: var(--hover);
   }
 
   .tab-panel {
