@@ -1,0 +1,14 @@
+---
+const { name, url, star = false } = Astro.props;
+let domain = "";
+try {
+  domain = new URL(url).hostname.replace('www.', '');
+} catch (e) {
+  domain = url;
+}
+---
+
+<a href={url} target="_blank" class="resource-item">
+  <span class="resource-name">{name}{star && ' ⭐️'}</span>
+  <span class="resource-domain mono dim">{domain}</span>
+</a>

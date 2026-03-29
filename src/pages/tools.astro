@@ -1,0 +1,619 @@
+---
+import Main from "../layouts/Main.astro";
+---
+
+<Main title="Tools" fullWidth={true} />
+
+<div class="tools-wrapper">
+  <div class="tools-container">
+    <!-- 1. Preview Bar (Now at the top) -->
+    <div id="previewBar" class="preview-bar">
+      <div class="preview-frame-wrap">
+        <div id="previewFrame" class="preview-frame"></div>
+      </div>
+      <div class="preview-info">
+        <div class="pi-block">
+          <div class="pi-label">NAME</div>
+          <div id="piName" class="pi-value"></div>
+        </div>
+        <div class="pi-block">
+          <div class="pi-label">DIMENSIONS</div>
+          <div id="piDims" class="pi-value"></div>
+        </div>
+        <div class="pi-block">
+          <div class="pi-label">RATIO</div>
+          <div id="piRatio" class="pi-value"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Dual Selector Row (Generator) -->
+    <div id="searchRow" class="search-row dual">
+      <div class="selector-group">
+        <label for="resInput">RESOLUTION</label>
+        <div class="input-wrap">
+          <input id="resInput" type="text" placeholder="e.g. 1080, 4K, 8K" autocomplete="off" spellcheck="false" />
+          <div id="resList" class="custom-dropdown"></div>
+        </div>
+      </div>
+      <div class="selector-group">
+        <label for="ratioInput">ASPECT RATIO</label>
+        <div class="input-wrap">
+          <input id="ratioInput" type="text" placeholder="e.g. 16:9, 2.39" autocomplete="off" spellcheck="false" />
+          <div id="ratioList" class="custom-dropdown"></div>
+        </div>
+      </div>
+      <button id="customTrigger">+ Custom</button>
+    </div>
+
+    <!-- 3. Custom Dimensions Row -->
+    <div id="customRow" class="custom-row">
+      <div class="input-group">
+        <label for="cW">WIDTH</label>
+        <input id="cW" type="number" placeholder="3840" style="width: 80px" />
+      </div>
+      <div class="input-group">
+        <label for="cH">HEIGHT</label>
+        <input id="cH" type="number" placeholder="2160" style="width: 80px" />
+      </div>
+      <div class="input-group">
+        <label for="customRatio">RATIO</label>
+        <input id="customRatio" type="text" readonly style="width: 70px" />
+      </div>
+      <button id="applyBtn">Apply</button>
+    </div>
+
+    <!-- Reference List -->
+    <div class="section-header">REFERENCE</div>
+    <div id="resultsList"></div>
+  </div>
+</div>
+
+<style is:global>
+  :root {
+    --mono: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --text: #111;
+    --dim: #999;
+    --line: #e5e5e5;
+    --hover: #f7f7f7;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  .tools-wrapper {
+    background: #fff;
+    min-height: 100vh;
+    color: var(--text);
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .tools-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0px 24px 80px;
+  }
+
+  input {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 7px 10px;
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.12s;
+  }
+  input:focus { border-color: #bbb; }
+  input::placeholder { color: var(--dim); }
+
+  .preview-bar {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 32px;
+    padding: 24px 0 40px;
+    border-bottom: 1px solid var(--line);
+    gap: 32px;
+    align-items: center;
+  }
+
+  .preview-frame-wrap {
+    width: 100%;
+    max-width: 600px;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--hover);
+  }
+
+  #previewFrame {
+    border: 1px solid var(--text);
+    transition: all 0.2s ease-out;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  #previewFrame::before,
+  #previewFrame::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--line);
+  }
+  #previewFrame::before { width: 1px; height: 30%; }
+  #previewFrame::after { height: 1px; width: 30%; }
+
+  .preview-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    max-width: 560px;
+  }
+
+  .pi-label {
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+  }
+
+  .pi-value {
+    font-size: 11px;
+    font-weight: 500;
+    font-family: var(--font-mono);
+  }
+
+  .search-row.dual {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 24px;
+  }
+
+  .selector-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .selector-group label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.1em;
+  }
+
+  .input-wrap { position: relative; width: 100%; }
+  .input-wrap input { width: 100%; }
+
+  .custom-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--text);
+    border-top: none;
+    z-index: 100;
+    max-height: 240px;
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .custom-dropdown.on { display: block; }
+
+  .dropdown-item {
+    padding: 8px 10px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.1s;
+    color: var(--text);
+  }
+  .dropdown-item:last-child { border-bottom: none; }
+  .dropdown-item:hover { background: var(--hover); }
+
+  #customTrigger {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--dim);
+    font-size: 12px;
+    padding: 7px 14px;
+    cursor: pointer;
+    height: 33px;
+  }
+  #customTrigger.on { border-color: var(--text); color: var(--text); }
+
+  .custom-row {
+    display: none;
+    gap: 8px;
+    margin-bottom: 32px;
+    align-items: flex-end;
+  }
+  .custom-row.on { display: flex; }
+
+  #applyBtn {
+    background: var(--text);
+    color: #fff;
+    border: none;
+    font-size: 11px;
+    padding: 0 16px;
+    height: 32px;
+    cursor: pointer;
+  }
+
+  .section-header {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--dim);
+    padding: 48px 0 16px;
+    border-top: 1px solid var(--line);
+    text-transform: uppercase;
+  }
+
+  .group-label {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 14px 0 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--line);
+  }
+  .group-label:first-of-type { border-top: none; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 100px 80px;
+    padding: 6px 8px;
+    margin: 0 -8px;
+    cursor: pointer;
+    border-radius: 2px;
+    gap: 12px;
+    align-items: center;
+  }
+  .row:hover { background: var(--hover); }
+  .row.sel { background: #f0f0f0; }
+
+  .r-name { font-size: 11px; font-weight: 500; font-family: var(--font-mono); }
+  .r-dims, .r-ratio { font-size: 10px; font-weight: 500; color: var(--dim); font-family: var(--font-mono); text-align: right; }
+  .r-dims { text-align: left; }
+</style>
+
+<script>
+  interface ResolutionItem {
+    name: string; w: number; h: number; cat: string; res: string; ratio: string;
+  }
+
+  const CAT_ORDER = [
+    "Cinema DCP 4K", "8K", "6K", "4K", "3K", "2K", "Cinema DCP 2K", 
+    "8K UHD", "5K", "4K UHD", "3K UHD", "1080p", "720p"
+  ];
+
+  const DB: ResolutionItem[] = [
+    // Cinema DCP 4K
+    { name: "Flat (1.85)", w: 3996, h: 2160, cat: "Cinema DCP 4K", res: "DCP 4K", ratio: "1.85" },
+    { name: "Scope (2.39)", w: 4096, h: 1716, cat: "Cinema DCP 4K", res: "DCP 4K", ratio: "2.39" },
+    { name: "Full Container (1.90)", w: 4096, h: 2160, cat: "Cinema DCP 4K", res: "DCP 4K", ratio: "1.90" },
+    // 8K
+    { name: "0.80 (4:5)", w: 3686, h: 4608, cat: "8K", res: "8K", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 5760, h: 4608, cat: "8K", res: "8K", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 6144, h: 4608, cat: "8K", res: "8K", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 7680, h: 4608, cat: "8K", res: "8K", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 8192, h: 4608, cat: "8K", res: "8K", ratio: "16:9" },
+    { name: "1.85", w: 8192, h: 4428, cat: "8K", res: "8K", ratio: "1.85" },
+    { name: "1.90", w: 8192, h: 4320, cat: "8K", res: "8K", ratio: "1.90" },
+    { name: "2.00", w: 8192, h: 4096, cat: "8K", res: "8K", ratio: "2:1" },
+    { name: "2.35", w: 8192, h: 3486, cat: "8K", res: "8K", ratio: "2.35" },
+    { name: "2.37", w: 8192, h: 3456, cat: "8K", res: "8K", ratio: "2.37" },
+    { name: "2.39", w: 8192, h: 3428, cat: "8K", res: "8K", ratio: "2.39" },
+    { name: "2.40", w: 8192, h: 3414, cat: "8K", res: "8K", ratio: "2.40" },
+    { name: "2.44", w: 8192, h: 3356, cat: "8K", res: "8K", ratio: "2.44" },
+    // 6K
+    { name: "0.80 (4:5)", w: 2764, h: 3456, cat: "6K", res: "6K", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 4320, h: 3456, cat: "6K", res: "6K", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 4608, h: 3456, cat: "6K", res: "6K", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 5760, h: 3456, cat: "6K", res: "6K", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 6144, h: 3456, cat: "6K", res: "6K", ratio: "16:9" },
+    { name: "1.85", w: 6144, h: 3320, cat: "6K", res: "6K", ratio: "1.85" },
+    { name: "1.90", w: 6144, h: 3234, cat: "6K", res: "6K", ratio: "1.90" },
+    { name: "2.00", w: 6144, h: 3072, cat: "6K", res: "6K", ratio: "2:1" },
+    { name: "2.35", w: 6144, h: 2614, cat: "6K", res: "6K", ratio: "2.35" },
+    { name: "2.37", w: 6144, h: 2592, cat: "6K", res: "6K", ratio: "2.37" },
+    { name: "2.39", w: 6144, h: 2570, cat: "6K", res: "6K", ratio: "2.39" },
+    { name: "2.40", w: 6144, h: 2560, cat: "6K", res: "6K", ratio: "2.40" },
+    { name: "2.44", w: 6144, h: 2518, cat: "6K", res: "6K", ratio: "2.44" },
+    // 4K
+    { name: "0.80 (4:5)", w: 1842, h: 2304, cat: "4K", res: "4K", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 2880, h: 2304, cat: "4K", res: "4K", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 3072, h: 2304, cat: "4K", res: "4K", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 3840, h: 2304, cat: "4K", res: "4K", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 4096, h: 2304, cat: "4K", res: "4K", ratio: "16:9" },
+    { name: "1.85", w: 4096, h: 2214, cat: "4K", res: "4K", ratio: "1.85" },
+    { name: "1.90", w: 4096, h: 2160, cat: "4K", res: "4K", ratio: "1.90" },
+    { name: "2.00", w: 4096, h: 2048, cat: "4K", res: "4K", ratio: "2:1" },
+    { name: "2.35", w: 4096, h: 1742, cat: "4K", res: "4K", ratio: "2.35" },
+    { name: "2.37", w: 4096, h: 1728, cat: "4K", res: "4K", ratio: "2.37" },
+    { name: "2.39", w: 4096, h: 1716, cat: "4K", res: "4K", ratio: "2.39" },
+    { name: "2.40", w: 4096, h: 1706, cat: "4K", res: "4K", ratio: "2.40" },
+    { name: "2.44", w: 4096, h: 1678, cat: "4K", res: "4K", ratio: "2.44" },
+    // 3K
+    { name: "0.80 (4:5)", w: 1382, h: 1728, cat: "3K", res: "3K", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 2160, h: 1728, cat: "3K", res: "3K", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 2304, h: 1728, cat: "3K", res: "3K", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 2880, h: 1728, cat: "3K", res: "3K", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 3072, h: 1728, cat: "3K", res: "3K", ratio: "16:9" },
+    { name: "1.85", w: 3072, h: 1660, cat: "3K", res: "3K", ratio: "1.85" },
+    { name: "1.90", w: 3072, h: 1620, cat: "3K", res: "3K", ratio: "1.90" },
+    { name: "2.00", w: 3072, h: 1536, cat: "3K", res: "3K", ratio: "2:1" },
+    { name: "2.35", w: 3072, h: 1306, cat: "3K", res: "3K", ratio: "2.35" },
+    { name: "2.37", w: 3072, h: 1296, cat: "3K", res: "3K", ratio: "2.37" },
+    { name: "2.39", w: 3072, h: 1284, cat: "3K", res: "3K", ratio: "2.39" },
+    { name: "2.40", w: 3072, h: 1280, cat: "3K", res: "3K", ratio: "2.40" },
+    { name: "2.44", w: 3072, h: 1259, cat: "3K", res: "3K", ratio: "2.44" },
+    // 2K
+    { name: "0.80 (4:5)", w: 922, h: 1152, cat: "2K", res: "2K", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 1440, h: 1152, cat: "2K", res: "2K", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 1536, h: 1152, cat: "2K", res: "2K", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 1920, h: 1152, cat: "2K", res: "2K", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 2048, h: 1152, cat: "2K", res: "2K", ratio: "16:9" },
+    { name: "1.85", w: 2048, h: 1106, cat: "2K", res: "2K", ratio: "1.85" },
+    { name: "1.90", w: 2048, h: 1078, cat: "2K", res: "2K", ratio: "1.90" },
+    { name: "2.00", w: 2048, h: 1024, cat: "2K", res: "2K", ratio: "2:1" },
+    { name: "2.35", w: 2048, h: 870, cat: "2K", res: "2K", ratio: "2.35" },
+    { name: "2.37", w: 2048, h: 864, cat: "2K", res: "2K", ratio: "2.37" },
+    { name: "2.39", w: 2048, h: 858, cat: "2K", res: "2K", ratio: "2.39" },
+    { name: "2.40", w: 2048, h: 852, cat: "2K", res: "2K", ratio: "2.40" },
+    { name: "2.44", w: 2048, h: 838, cat: "2K", res: "2K", ratio: "2.44" },
+    // Cinema DCP 2K
+    { name: "Flat (1.85)", w: 1998, h: 1080, cat: "Cinema DCP 2K", res: "DCP 2K", ratio: "1.85" },
+    { name: "Scope (2.39)", w: 2048, h: 858, cat: "Cinema DCP 2K", res: "DCP 2K", ratio: "2.39" },
+    { name: "Full Container (1.90)", w: 2048, h: 1080, cat: "Cinema DCP 2K", res: "DCP 2K", ratio: "1.90" },
+    // 8K UHD
+    { name: "0.80 (4:5)", w: 2765, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 5400, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 5760, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 7200, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 7680, h: 4320, cat: "8K UHD", res: "8K UHD", ratio: "16:9" },
+    { name: "1.85", w: 7680, h: 4150, cat: "8K UHD", res: "8K UHD", ratio: "1.85" },
+    { name: "1.90", w: 7680, h: 4042, cat: "8K UHD", res: "8K UHD", ratio: "1.90" },
+    { name: "2.00", w: 7680, h: 3840, cat: "8K UHD", res: "8K UHD", ratio: "2:1" },
+    { name: "2.35", w: 7680, h: 3268, cat: "8K UHD", res: "8K UHD", ratio: "2.35" },
+    { name: "2.37", w: 7680, h: 3240, cat: "8K UHD", res: "8K UHD", ratio: "2.37" },
+    { name: "2.39", w: 7680, h: 3214, cat: "8K UHD", res: "8K UHD", ratio: "2.39" },
+    { name: "2.40", w: 7680, h: 3200, cat: "8K UHD", res: "8K UHD", ratio: "2.40" },
+    { name: "2.44", w: 7680, h: 3148, cat: "8K UHD", res: "8K UHD", ratio: "2.44" },
+    // 5K
+    { name: "0.80 (4:5)", w: 2304, h: 2880, cat: "5K", res: "5K", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 3600, h: 2880, cat: "5K", res: "5K", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 3840, h: 2880, cat: "5K", res: "5K", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 4800, h: 2880, cat: "5K", res: "5K", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 5120, h: 2880, cat: "5K", res: "5K", ratio: "16:9" },
+    { name: "1.85", w: 5120, h: 2768, cat: "5K", res: "5K", ratio: "1.85" },
+    { name: "1.90", w: 5120, h: 2700, cat: "5K", res: "5K", ratio: "1.90" },
+    { name: "2.00", w: 5120, h: 2560, cat: "5K", res: "5K", ratio: "2:1" },
+    { name: "2.35", w: 5120, h: 2178, cat: "5K", res: "5K", ratio: "2.35" },
+    { name: "2.37", w: 5120, h: 2160, cat: "5K", res: "5K", ratio: "2.37" },
+    { name: "2.39", w: 5120, h: 2142, cat: "5K", res: "5K", ratio: "2.39" },
+    { name: "2.40", w: 5120, h: 2136, cat: "5K", res: "5K", ratio: "2.40" },
+    { name: "2.44", w: 5120, h: 2098, cat: "5K", res: "5K", ratio: "2.44" },
+    // 4K UHD
+    { name: "0.80 (4:5)", w: 1728, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 2700, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 2880, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 3600, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 3840, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "16:9" },
+    { name: "1.85", w: 3840, h: 2076, cat: "4K UHD", res: "4K UHD", ratio: "1.85" },
+    { name: "1.90", w: 3840, h: 2020, cat: "4K UHD", res: "4K UHD", ratio: "1.90" },
+    { name: "2.00", w: 3840, h: 1920, cat: "4K UHD", res: "4K UHD", ratio: "2:1" },
+    { name: "2.35", w: 3840, h: 1634, cat: "4K UHD", res: "4K UHD", ratio: "2.35" },
+    { name: "2.37", w: 3840, h: 1620, cat: "4K UHD", res: "4K UHD", ratio: "2.37" },
+    { name: "2.39", w: 3840, h: 1606, cat: "4K UHD", res: "4K UHD", ratio: "2.39" },
+    { name: "2.40", w: 3840, h: 1600, cat: "4K UHD", res: "4K UHD", ratio: "2.40" },
+    { name: "2.44", w: 3840, h: 1574, cat: "4K UHD", res: "4K UHD", ratio: "2.44" },
+    // 3K UHD
+    { name: "0.80 (4:5)", w: 1296, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 2024, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 2160, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 2700, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 2880, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "16:9" },
+    { name: "1.85", w: 2880, h: 1556, cat: "3K UHD", res: "3K UHD", ratio: "1.85" },
+    { name: "1.90", w: 2880, h: 1516, cat: "3K UHD", res: "3K UHD", ratio: "1.90" },
+    { name: "2.00", w: 2880, h: 1440, cat: "3K UHD", res: "3K UHD", ratio: "2:1" },
+    { name: "2.35", w: 2880, h: 1226, cat: "3K UHD", res: "3K UHD", ratio: "2.35" },
+    { name: "2.37", w: 2880, h: 1216, cat: "3K UHD", res: "3K UHD", ratio: "2.37" },
+    { name: "2.39", w: 2880, h: 1204, cat: "3K UHD", res: "3K UHD", ratio: "2.39" },
+    { name: "2.40", w: 2880, h: 1200, cat: "3K UHD", res: "3K UHD", ratio: "2.40" },
+    { name: "2.44", w: 2880, h: 1180, cat: "3K UHD", res: "3K UHD", ratio: "2.44" },
+    // 1080p
+    { name: "0.80 (4:5)", w: 864, h: 1080, cat: "1080p", res: "1080p", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 1350, h: 1080, cat: "1080p", res: "1080p", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 1440, h: 1080, cat: "1080p", res: "1080p", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 1800, h: 1080, cat: "1080p", res: "1080p", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 1920, h: 1080, cat: "1080p", res: "1080p", ratio: "16:9" },
+    { name: "1.85", w: 1920, h: 1038, cat: "1080p", res: "1080p", ratio: "1.85" },
+    { name: "1.90", w: 1920, h: 1010, cat: "1080p", res: "1080p", ratio: "1.90" },
+    { name: "2.00", w: 1920, h: 960, cat: "1080p", res: "1080p", ratio: "2:1" },
+    { name: "2.35", w: 1920, h: 816, cat: "1080p", res: "1080p", ratio: "2.35" },
+    { name: "2.37", w: 1920, h: 810, cat: "1080p", res: "1080p", ratio: "2.37" },
+    { name: "2.39", w: 1920, h: 802, cat: "1080p", res: "1080p", ratio: "2.39" },
+    { name: "2.40", w: 1920, h: 800, cat: "1080p", res: "1080p", ratio: "2.40" },
+    { name: "2.44", w: 1920, h: 786, cat: "1080p", res: "1080p", ratio: "2.44" },
+    // 720p
+    { name: "0.80 (4:5)", w: 576, h: 720, cat: "720p", res: "720p", ratio: "4:5" },
+    { name: "1.25 (5:4)", w: 900, h: 720, cat: "720p", res: "720p", ratio: "5:4" },
+    { name: "1.33 (4:3)", w: 960, h: 720, cat: "720p", res: "720p", ratio: "4:3" },
+    { name: "1.66 (5:3)", w: 1200, h: 720, cat: "720p", res: "720p", ratio: "5:3" },
+    { name: "1.78 (16:9)", w: 1280, h: 720, cat: "720p", res: "720p", ratio: "16:9" },
+    { name: "1.85", w: 1280, h: 692, cat: "720p", res: "720p", ratio: "1.85" },
+    { name: "1.90", w: 1280, h: 674, cat: "720p", res: "720p", ratio: "1.90" },
+    { name: "2.00", w: 1280, h: 640, cat: "720p", res: "720p", ratio: "2:1" },
+    { name: "2.35", w: 1280, h: 544, cat: "720p", res: "720p", ratio: "2.35" },
+    { name: "2.37", w: 1280, h: 540, cat: "720p", res: "720p", ratio: "2.37" },
+    { name: "2.39", w: 1280, h: 536, cat: "720p", res: "720p", ratio: "2.39" },
+    { name: "2.40", w: 1280, h: 532, cat: "720p", res: "720p", ratio: "2.40" },
+    { name: "2.44", w: 1280, h: 524, cat: "720p", res: "720p", ratio: "2.44" },
+  ];
+
+  const RES_OPTS = ["DCP 4K", "8K", "6K", "4K", "3K", "2K", "DCP 2K", "8K UHD", "5K", "4K UHD", "3K UHD", "1080p", "720p"];
+  const RATIO_OPTS = ["1.85 (Flat)", "2.39 (Scope)", "1.90", "16:9", "2:1", "4:3", "4:5", "5:4", "5:3", "2.35", "2.37", "2.40", "2.44"];
+
+  const RES_MAP: Record<string, number> = {
+    "HD": 720, "720p": 720, "FHD": 1080, "1080p": 1080, "2K": 1152, "DCP 2K": 1080, "3K": 1728, "3K UHD": 1620,
+    "4K": 2304, "4K UHD": 2160, "DCP 4K": 2160, "5K": 2880, "6K": 3456, "8K": 4608, "8K UHD": 4320
+  };
+  const RATIO_MAP: Record<string, number> = {
+    "16:9": 1.777, "1.78": 1.777, "1.85": 1.85, "2.39": 2.39, "2.40": 2.40, "2:1": 2.0, "4:3": 1.333,
+    "4:5": 0.8, "5:4": 1.25, "5:3": 1.666, "1.90": 1.9, "2.35": 2.35, "2.37": 2.37, "2.44": 2.44
+  };
+
+  let resVal = ""; 
+  let ratioVal = "";
+  let selected_item: ResolutionItem | null = null;
+  const collapsedGroups = new Set(CAT_ORDER);
+
+  const resInput = document.getElementById("resInput") as HTMLInputElement;
+  const ratioInput = document.getElementById("ratioInput") as HTMLInputElement;
+  const resList = document.getElementById("resList") as HTMLElement;
+  const ratioList = document.getElementById("ratioList") as HTMLElement;
+  const previewFrame = document.getElementById("previewFrame") as HTMLElement;
+  const piName = document.getElementById("piName");
+  const piDims = document.getElementById("piDims");
+  const piRatio = document.getElementById("piRatio");
+  const resultsList = document.getElementById("resultsList") as HTMLElement;
+
+  function gcd(a: number, b: number): number { return b === 0 ? a : gcd(b, a % b); }
+  function rat(w: number, h: number): string {
+    const d = gcd(w, h), rw = w/d, rh = h/d;
+    return (rw <= 32 && rh <= 32) ? `${rw}:${rh}` : (w/h).toFixed(3) + ":1";
+  }
+
+  function updateDynamic() {
+    // 1. Exact Match Check (Precision Snap)
+    const exact = DB.find(i => i.cat.toUpperCase() === resVal.toUpperCase() && (i.ratio === ratioVal || i.name.includes(ratioVal)));
+    if (exact) {
+      selected_item = exact;
+      renderList();
+      showPreview(exact.w, exact.h, exact.name);
+      return;
+    }
+
+    // 2. Fallback to calculation
+    const h = RES_MAP[resVal.toUpperCase()] || parseInt(resVal);
+    let cleanRatio = ratioVal.split(" ")[0];
+    const r = RATIO_MAP[cleanRatio] || parseFloat(cleanRatio);
+
+    if (h > 0 && r > 0) {
+      const w = Math.round(h * r);
+      selected_item = null;
+      renderList();
+      showPreview(w, h, `${resVal.toUpperCase() || "Dynamic"} ${ratioVal || ""}`.trim());
+    } else {
+      renderList();
+    }
+  }
+
+  function setupDropdown(input: HTMLInputElement, list: HTMLElement, options: string[]) {
+    const show = () => {
+      list.innerHTML = "";
+      options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "dropdown-item";
+        div.textContent = opt;
+        div.onmousedown = (e) => {
+          e.preventDefault();
+          input.value = opt;
+          if (input.id === "resInput") resVal = opt;
+          if (input.id === "ratioInput") ratioVal = opt;
+          input.dispatchEvent(new Event("input"));
+          list.classList.remove("on");
+          updateDynamic();
+        };
+        list.appendChild(div);
+      });
+      list.classList.add("on");
+    };
+
+    input.onfocus = show;
+    input.onclick = show;
+    input.onblur = () => setTimeout(() => list.classList.remove("on"), 150);
+    
+    input.oninput = () => {
+      const val = input.value.toLowerCase();
+      if (!list.classList.contains("on")) list.classList.add("on");
+      Array.from(list.children).forEach(child => {
+        const match = child.textContent?.toLowerCase().includes(val);
+        (child as HTMLElement).style.display = match ? "block" : "none";
+      });
+    };
+  }
+
+  function pick(item: ResolutionItem) {
+    selected_item = item;
+    resInput.value = item.cat;
+    ratioInput.value = item.name;
+    resVal = item.cat;
+    ratioVal = item.name;
+    renderList();
+    showPreview(item.w, item.h, item.name);
+    if (collapsedGroups.has(item.cat)) {
+      collapsedGroups.delete(item.cat);
+      renderList();
+    }
+  }
+
+  const MAX_W = 560; const MAX_H = 280;
+
+  function showPreview(w: number, h: number, name: string) {
+    const ratio = w / h;
+    let fw, fh;
+    if (ratio > (MAX_W/MAX_H)) { fw = MAX_W; fh = Math.round(MAX_W/ratio); }
+    else { fh = MAX_H; fw = Math.round(MAX_H*ratio); }
+    if (previewFrame) { previewFrame.style.width = fw + "px"; previewFrame.style.height = fh + "px"; }
+    if (piName) piName.textContent = name;
+    if (piDims) piDims.textContent = `${w.toLocaleString()} × ${h.toLocaleString()}`;
+    if (piRatio) piRatio.textContent = rat(w, h);
+  }
+
+  function renderList() {
+    if (!resultsList) return;
+    resultsList.innerHTML = "";
+    const filtered = DB.filter(i => {
+       const mR = !resVal || i.res.toLowerCase().includes(resVal.toLowerCase()) || i.cat.toLowerCase().includes(resVal.toLowerCase());
+       const mT = !ratioVal || i.ratio.toLowerCase().includes(ratioVal.toLowerCase()) || i.name.toLowerCase().includes(ratioVal.toLowerCase());
+       return mR && mT;
+    });
+    const groupsMap: Record<string, ResolutionItem[]> = {};
+    filtered.forEach(i => { (groupsMap[i.cat] = groupsMap[i.cat] || []).push(i); });
+    CAT_ORDER.forEach(cat => {
+      if (!groupsMap[cat]) return;
+      const isCollapsed = collapsedGroups.has(cat) && !resVal && !ratioVal;
+      const gLabel = document.createElement("div"); gLabel.className = "group-label"; gLabel.innerHTML = `<span>${cat}</span> <span>▾</span>`;
+      gLabel.onclick = () => { if (collapsedGroups.has(cat)) collapsedGroups.delete(cat); else collapsedGroups.add(cat); renderList(); };
+      const gRows = document.createElement("div"); gRows.style.display = isCollapsed ? "none" : "block";
+      groupsMap[cat].forEach(item => {
+        const row = document.createElement("div"); row.className = "row" + (selected_item?.name === item.name && selected_item?.cat === item.cat ? " sel" : "");
+        row.innerHTML = `<div class="r-name">${item.name}</div><div class="r-dims">${item.w}×${item.h}</div><div class="r-ratio">${rat(item.w,item.h)}</div>`;
+        row.onclick = () => pick(item); gRows.appendChild(row);
+      });
+      resultsList.appendChild(gLabel); resultsList.appendChild(gRows);
+    });
+  }
+
+  resInput.oninput = (e) => { resVal = (e.target as HTMLInputElement).value; updateDynamic(); };
+  ratioInput.oninput = (e) => { ratioVal = (e.target as HTMLInputElement).value; updateDynamic(); };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setupDropdown(resInput, resList, RES_OPTS);
+    setupDropdown(ratioInput, ratioList, RATIO_OPTS);
+    pick(DB.find(i => i.cat === "1080p" && i.ratio === "16:9") || DB[0]);
+  });
+</script>

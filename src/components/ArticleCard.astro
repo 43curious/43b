@@ -4,15 +4,59 @@ type Props = {
   blog: CollectionEntry<"blog">;
 };
 const { blog } = Astro.props;
-const { title } = blog.data;
+const { title, updatedDate } = blog.data;
+const formattedDate = updatedDate
+  ? new Date(updatedDate).toISOString().split("T")[0]
+  : "";
 ---
 
-<a
-  href={`/blog/${blog.id}`}
-  class="text-black font-bold py-2.5 px-4 transition ease-in-out delay-50 hover:cursor-pointer text-xl gap-4
-         flex flex-col sm:flex-row w-full sm:w-fit"
->
-  <span class="opacity-80 hover:opacity-100">
-    {title}
-  </span>
+<a href={`/blog/${blog.id}`} class="article-row">
+  <div class="row-content flex justify-between items-center w-full">
+    <span class="title">{title}</span>
+    <span class="meta mono dim">{formattedDate}</span>
+  </div>
 </a>
+
+<style>
+  .article-row {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    margin: 0 -12px;
+    border-radius: 2px;
+    transition: background 0.1s ease;
+    text-decoration: none;
+  }
+
+  .article-row:hover {
+    background: var(--hover);
+  }
+
+  .row-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .meta {
+    font-size: 12px;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .row-content {
+      align-items: flex-start;
+    }
+    .meta {
+      font-size: 10px;
+    }
+  }
+</style>

@@ -1,279 +1,331 @@
-/* Reset and base styles */
+/* Centralized Design System (Tools-Style) */
+:root {
+  --mono: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --text: #111;
+  --dim: #999;
+  --line: #e5e5e5;
+  --hover: #f7f7f7;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 * {
   box-sizing: border-box;
 }
 
-/* Setting the base font-size on the html element is crucial
-  for rem units to work correctly and allows for easy scaling.
-*/
 html {
   font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  scrollbar-gutter: stable;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  
-  /* Using clamp() for fluid, responsive font sizing */
-  font-size: clamp(1rem, 1.5vw, 1.125rem); /* Min, preferred, max */
-  
-  line-height: 1.6;
-  color: #333;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--text);
   background-color: #fff;
   margin: 0;
-  
-  /* Using a max-width and auto margins centers the content */
-  max-width: 65ch;
-  margin: auto;
-  
-  /* Consistent padding that scales with the viewport */
-  padding: 2rem 1rem;
+  width: 100%;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.container-fluid {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
 /* Typography hierarchy */
-
-/* Using clamp() for responsive font-sizes for headings */
 h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.2;
-  margin: 0 0 1.5rem 0;
-  color: #111;
+  margin: 0 0 1rem 0;
+  color: var(--text);
 }
 
 h2 {
-  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-  font-weight: 700; /* changed from 'extrabold' to a numeric value for better support */
+  font-size: 18px;
+  font-weight: 700;
   line-height: 1.3;
   margin: 2.5rem 0 1rem 0;
-  color: #222;
+  color: var(--text);
 }
 
 h2::after {
   content: "";
   display: block;
   height: 1px;
-  background-color: #e0e0e0; /* light gray */
-  margin: 0.3rem 0; /* Consistent spacing with rem */
+  background-color: var(--line);
+  margin: 0.3rem 0;
 }
 
 h3 {
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.4;
   margin: 2rem 0 0.75rem 0;
-  color: #333;
+  color: var(--text);
 }
 
-h4, h5, h6 {
-  font-size: 1.125rem;
+h4,
+h5,
+h6 {
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.4;
   margin: 1.5rem 0 0.5rem 0;
-  color: #333;
+  color: var(--text);
 }
 
-/* Paragraphs and text */
 p {
   margin: 0 0 1.25rem 0;
-}
-
-/* Links */
-a {
-  color: #0066cc;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease;
-}
-
-.prose a:hover {
-  text-decoration: underline;
-}
-
-/* Code and preformatted text */
-code {
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
-  font-size: 0.875em;
-  padding: 0.125rem 0.25rem;
-  border-radius: 3px;
-  color: #c7254e;
-}
-
-/* Override background and appearance */
-pre.catppuccin-latte{
-  background-color: #ffffff !important; /* override Latte’s light gray */
-  border-radius: 0.5rem;
-  border: 1px solid #e0e0e0;
-  padding: 1rem;
-  overflow-x: auto;
-}
-
-/* Optional: Override token styles */
-pre.catppuccin-latte code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 400;
   line-height: 1.6;
-  color: #e0e0e0; /* force text color override if needed */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.12s ease;
+}
+
+/* Navigation */
+nav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 8px;
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 54px;
+  font-size: 14px;
+}
+
+nav a {
+  font-weight: 500;
+  color: var(--dim);
+  transition: color 0.15s ease;
+}
+
+nav a:hover,
+nav a.active {
+  color: var(--text);
+}
+
+/* Footer */
+footer {
+  margin-top: 60px;
+  padding: 40px 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--dim);
+}
+
+/* Utility */
+.prose {
+  max-width: 65ch;
+  margin: 0 auto;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+/* Selection */
+::selection {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+/* --- REFINED PROSE STYLES (Article Content) --- */
+.prose-full,
+.prose {
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.prose-full p,
+.prose p {
+  margin-bottom: 1.5rem;
+}
+
+/* Links inside articles */
+.prose-full a,
+.prose a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1px;
+}
+
+.prose-full a:hover,
+.prose a:hover {
+  border-bottom-color: var(--text);
 }
 
 /* Lists */
-ul, ol {
-  margin: 0 0 1.25rem 0;
+.prose-full ul,
+.prose ul {
+  list-style-type: disc;
+  margin-bottom: 1.5rem;
   padding-left: 1.5rem;
 }
 
-ul {
-  list-style-type: disc;
-}
-
-ol {
+.prose-full ol,
+.prose ol {
   list-style-type: decimal;
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
 }
 
-li {
-  margin-bottom: 0.25rem;
-}
-
-ul ul {
-  list-style-type: circle;
-  margin-top: 0.25rem;
-  margin-bottom: 0.5rem;
-}
-
-ul ul ul {
-  list-style-type: square;
-}
-
-ol ol, ul ol, ol ul {
-  margin-top: 0.25rem;
+.prose-full li,
+.prose li {
   margin-bottom: 0.5rem;
 }
 
 /* Blockquotes */
-blockquote {
-  margin: 1.5rem 0;
-  padding: 0 1rem;
-  border-left: 4px solid #ddd;
-  color: #666;
-  font-style: italic;
-}
-
-/* Tables */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
-  font-size: 0.9rem;
-}
-
-th, td {
-  text-align: left;
-  padding: 0.75rem;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  font-weight: 600;
-  background-color: #f8f8f8;
-  border-bottom: 2px solid #ddd;
-}
-
-body tr:hover {
-  background-color: #f9f9f9;
-}
-
-/* Horizontal rule */
-hr {
-  border: none;
-  height: 1px;
-  background-color: #e5e5e5;
+.prose-full blockquote,
+.prose blockquote {
   margin: 2rem 0;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  border-left: 1px solid var(--text);
+  font-style: italic;
+  color: var(--text);
+}
+
+.prose-full blockquote p,
+.prose blockquote p {
+  margin-bottom: 0;
+}
+
+/* Code & Pre */
+.prose-full code,
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--hover);
+  padding: 0.2rem 0.4rem;
+  border-radius: 2px;
+}
+
+.prose-full pre,
+.prose pre {
+  background: #fafafa !important;
+  border: 1px solid var(--line);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  border-radius: 2px;
+}
+
+.prose-full pre code,
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
 }
 
 /* Images */
-img {
+.prose-full img,
+.prose img {
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
+  margin: 2rem 0;
+  border: 1px solid var(--line);
 }
 
-/* Inline code with pipes (common in CLI examples) */
-code:contains("|") {
-  white-space: nowrap;
-}
-
-/* GitHub link styling */
-#github {
-  display: flex;
-  gap: 5px;
-  color: black;
-  font-weight: 500;
-}
-
-/* Navigation (if present) */
-nav {
+/* Tables */
+.prose-full table,
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  font-size: 14px;
 }
 
-nav a {
-  margin-right: 1.5rem;
-  font-weight: 500;
-  color: #666;
+.prose-full th,
+.prose th,
+.prose-full td,
+.prose td {
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  text-align: left;
 }
 
-nav a:hover {
-  color: #333;
+.prose-full th,
+.prose th {
+  background: var(--hover);
+  font-weight: 600;
 }
 
-/* Header styling */
-header {
-  margin-bottom: 3rem;
+/* --- RESOURCE LIBRARY STYLES --- */
+.resource-grid {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
 }
 
-/* Footer styling */
-footer {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid #e5e5e5;
-  font-size: 0.875rem;
-  color: #666;
+.resource-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 42px;
+  line-height: normal;
+  /* Removed horizontal padding as per request */
+  padding: 0;
+  margin: 0;
+  border-radius: 2px;
+  text-decoration: none !important;
+  border: none !important;
+  transition: all 0.12s ease;
 }
 
-/* The previous media query for font-size is no longer needed due to clamp() */
-@media (max-width: 768px) {
-  body {
-    padding: 1rem;
+.resource-item:hover {
+  background: var(--hover);
+}
+
+.resource-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+}
+
+.resource-domain {
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 640px) {
+  .resource-item {
+    height: auto;
+    padding: 10px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 }
-
-
-/* Focus states for accessibility */
-a:focus,
-button:focus,
-input:focus,
-textarea:focus {
-  outline: 2px solid #0066cc;
-  outline-offset: 2px;
-}
-
-/* Selection color */
-::selection {
-  background-color: #b3d4fc;
-  color: #000;
-}
-
-/* Utility classes */
-.text-center {
-  text-align: center;
-}
-
-.text-small {
-  font-size: 0.875rem;
-  color: #666;
-}
-
-.mt-0 { margin-top: 0; }
-.mb-0 { margin-bottom: 0; }
-.mt-1 { margin-top: 1rem; }
-.mb-1 { margin-bottom: 1rem; }
-.mt-2 { margin-top: 2rem; }
-.mb-2 { margin-bottom: 2rem; }

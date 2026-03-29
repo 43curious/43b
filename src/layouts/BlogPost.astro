@@ -1,40 +1,60 @@
 ---
 const { frontmatter } = Astro.props;
 import Main from "./Main.astro";
+import AsciiSquare from "../components/AsciiSquare.astro";
 import "../styles/global.css";
+
+const date = frontmatter.pubDate || frontmatter.updatedDate;
+const formattedDate = date ? new Date(date).toISOString().split("T")[0] : "";
 ---
 
 <html lang="es" class="scroll-smooth">
-    <base target="_blank" />
     <Main title={frontmatter.title} description={frontmatter.description}>
-        <main class="">
-            <div class="h-full w-full">
-                <div class="flex">
-                    <div class="">
-                        <div class="font-bold sm:text-5xl text-4xl pb-4">
-                            {frontmatter.title}
-                        </div>
-                        <div class="font-medium opacity-75">
-                            {
-                                frontmatter.updatedDate && (
-                                    <div class="px-1 mt-1 text-md opacity-60">
-                                        Actualizado:{" "}
-                                        {frontmatter.updatedDate.getFullYear()}{" "}
-                                        ·{" "}
-                                        {frontmatter.updatedDate.getMonth() + 1}
-                                    </div>
-                                )
-                            }
-                        </div>
-                    </div>
+        <div class="max-w-[760px] mx-auto pb-20">
+            <header class="mt-16 mb-12">
+                <!-- Logo / Dithered Placeholder -->
+                <div class="mb-4">
+                    <AsciiSquare
+                        title={frontmatter.title}
+                        class="max-w-[320px] mx-auto mb-20"
+                        transitionName="ascii-hero"
+                    />
                 </div>
-                <hr class="" />
-                <article class="prose mb-20">
-                    <slot />
-                </article>
-            </div>
-        </main>
+
+                <div
+                    class="flex justify-between items-center border-t border-[#e5e5e5] pt-4 mb-20"
+                >
+                    <span
+                        class="relative top-[1px] font-mono text-sm uppercase text-[#999] tracking-tight leading-none"
+                    >
+                        {frontmatter.title}
+                    </span>
+                    <span
+                        class="font-mono text-sm text-[#999] uppercase tracking-tight leading-none mt-[0.5px]"
+                    >
+                        {formattedDate}
+                    </span>
+                </div>
+            </header>
+
+            <article class="prose-full text-[16px] leading-[1.6] text-[#111]">
+                <slot />
+            </article>
+
+            <footer class="mt-20 pt-10 border-t border-[#e5e5e5]">
+                <div class="flex justify-center">
+                    <a
+                        href="https://github.com/43castro"
+                        target="_blank"
+                        class="font-mono text-[11px] text-[#999] hover:text-[#111] transition-colors"
+                    >
+                        GITHUB
+                    </a>
+                </div>
+            </footer>
+        </div>
     </Main>
+
     <script>
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {

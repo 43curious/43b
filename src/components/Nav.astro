@@ -1,9 +1,15 @@
 ---
-import "../styles/global.css"
+import "../styles/global.css";
+
+const currentPath = Astro.url.pathname;
 ---
-<nav class="flex text-md justify-between items-center font-extralight w-full mx-auto mt-8 px-2 hover:cursor-pointer">
-  <a class="opacity-75 hover:opacity-100" target="_self" href="/">Blog</a>
-  <div class="flex gap-10">
-    <a href="/toolkit" target="_self" class="opacity-75 hover:opacity-100">Toolkit</a>
+
+<nav id="navbar">
+  <div class="container-fluid nav-content">
+    <a href="/" class={currentPath === "/" ? "active" : ""}>Blog</a>
+    <div style="display: flex; gap: 32px; align-items: center;">
+      <a href="/tools" class={currentPath === "/tools" ? "active" : ""}>Tools</a>
+      <a href="/about" class={currentPath === "/about" ? "active" : ""}>About</a>
+    </div>
   </div>
 </nav>

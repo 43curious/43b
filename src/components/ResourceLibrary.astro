@@ -1,0 +1,153 @@
+---
+interface Resource {
+  name: string;
+  url: string;
+  category: string;
+  star?: boolean;
+}
+
+interface Props {
+  resources: Resource[];
+}
+
+const { resources } = Astro.props;
+
+// Sort alphabetically by name
+const sortedResources = [...resources].sort((a, b) =>
+  a.name.localeCompare(b.name, "es", { sensitivity: "base" }),
+);
+
+// Get unique categories for filtering
+const categories = [
+  "ALL",
+  ...new Set(resources.map((r) => r.category.toUpperCase())),
+];
+
+// High-fidelity color map (Background / Text)
+const categoryColors: Record<string, { bg: string; text: string }> = {
+  ALL: { bg: "hsl(0, 0%, 95%)", text: "hsl(0, 0%, 20%)" },
+  UTILIDADES: { bg: "hsl(210, 80%, 95%)", text: "hsl(210, 100%, 30%)" },
+  MUSICA: { bg: "hsl(280, 80%, 95%)", text: "hsl(280, 100%, 30%)" },
+  FRAMES: { bg: "hsl(140, 80%, 95%)", text: "hsl(140, 100%, 25%)" },
+  TIPOGRAFIAS: { bg: "hsl(25, 80%, 95%)", text: "hsl(25, 100%, 35%)" },
+  COLOR: { bg: "hsl(0, 80%, 95%)", text: "hsl(0, 100%, 40%)" },
+  STOCK: { bg: "hsl(180, 80%, 95%)", text: "hsl(180, 100%, 25%)" },
+  DISENO: { bg: "hsl(330, 80%, 95%)", text: "hsl(330, 100%, 35%)" },
+  MOTION: { bg: "hsl(240, 80%, 95%)", text: "hsl(240, 100%, 40%)" },
+  YOUTUBE: { bg: "hsl(45, 85%, 90%)", text: "hsl(45, 100%, 25%)" },
+};
+
+function getDomain(url: string) {
+  try {
+    return new URL(url).hostname.replace("www.", "");
+  } catch (e) {
+    return url;
+  }
+}
+---
+
+<div class="resource-library-container">
+  <div class="filter-tags flex justify-between items-center mb-12 gap-2">
+    {
+      categories.map((cat, i) => {
+        const colors = categoryColors[cat] || categoryColors.ALL;
+        return (
+          <button
+            class={`filter-btn ${i === 0 ? "active" : ""}`}
+            data-filter={cat === "ALL" ? "all" : cat.toLowerCase()}
+            style={`--bg: ${colors.bg}; --text: ${colors.text};`}
+          >
+            {cat}
+          </button>
+        );
+      })
+    }
+  </div>
+
+  <div class="resource-grid" id="resource-list">
+    {
+      sortedResources.map((res) => (
+        <a
+          href={res.url}
+          target="_blank"
+          class="resource-item group"
+          data-category={res.category.toLowerCase()}
+        >
+          <span class="resource-name">
+            {res.name}
+            {res.star && <span class="ml-2">⭐️</span>}
+          </span>
+          <span class="resource-domain dim">{getDomain(res.url)}</span>
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .filter-btn {
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11px;
+    background: var(--bg);
+    color: var(--text);
+    opacity: 0.4;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .filter-btn:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+  }
+
+  .filter-btn.active {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Responsive adjustment for justify-between tags */
+  @media (max-width: 768px) {
+    .filter-tags {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+  }
+</style>
+
+<script>
+  function initFilters() {
+    const buttons = document.querySelectorAll(".filter-btn");
+    const items = document.querySelectorAll(".resource-item");
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        // Toggle Active Class
+        buttons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const filter = btn.getAttribute("data-filter");
+
+        // Filter Items
+        items.forEach((item) => {
+          const category = item.getAttribute("data-category");
+          if (filter === "all" || category === filter) {
+            (item as HTMLElement).style.display = "flex";
+          } else {
+            (item as HTMLElement).style.display = "none";
+          }
+        });
+      });
+    });
+  }
+
+  // Initial load
+  initFilters();
+
+  // Re-init on Astro transitions if enabled
+  document.addEventListener("astro:after-swap", initFilters);
+</script>

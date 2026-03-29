@@ -1,0 +1,92 @@
+---
+import { getCollection } from "astro:content";
+import ArticleCard from "./ArticleCard.astro";
+import ExperimentCard from "./ExperimentCard.astro";
+
+const allPosts = (await getCollection("blog")).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title),
+);
+
+const allExperiments = (await getCollection("experiments")).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title),
+);
+---
+
+<div class="content-tabs">
+  <input
+    type="radio"
+    name="tab"
+    id="tab-1"
+    checked
+    class="tab-switch hidden"
+  />
+  <input type="radio" name="tab" id="tab-2" class="tab-switch hidden" />
+
+  <div class="tabs-nav mono">
+    <label for="tab-1" class="tab-label">GUIDES</label>
+    <label for="tab-2" class="tab-label">EXPERIMENTS</label>
+  </div>
+
+  <div class="tab-panel" id="panel-1">
+    <div class="rows-list">
+      {allPosts.map((p) => <ArticleCard blog={p} />)}
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-2">
+    <div class="rows-list">
+      {allExperiments.map((p) => <ExperimentCard experiments={p} />)}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Tabs System */
+  .content-tabs {
+    margin-bottom: 80px;
+  }
+
+  .tabs-nav {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1px;
+  }
+
+  .tab-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    color: var(--dim);
+    padding-bottom: 12px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: -0.5px;
+  }
+
+  .tab-label:hover {
+    color: var(--text);
+  }
+
+  #tab-1:checked ~ .tabs-nav label[for="tab-1"],
+  #tab-2:checked ~ .tabs-nav label[for="tab-2"] {
+    color: var(--text);
+    border-bottom-color: var(--text);
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  #tab-1:checked ~ #panel-1,
+  #tab-2:checked ~ #panel-2 {
+    display: block;
+  }
+
+  .rows-list {
+    display: flex;
+    flex-direction: column;
+  }
+</style>

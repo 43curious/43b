@@ -1,0 +1,314 @@
+---
+interface Props {
+  interactive?: boolean;
+  title?: string;
+  class?: string;
+  transitionName?: string;
+  transitionAnimate?: "slide" | "fade" | "none" | "initial";
+}
+
+const {
+  interactive = false,
+  title = "",
+  class: className = "",
+  transitionName,
+  transitionAnimate,
+} = Astro.props;
+---
+
+<div
+  class={`ascii-square-wrapper ${className}`}
+  data-interactive={interactive.toString()}
+  data-title={title}
+  transition:name={transitionName}
+  transition:animate={transitionAnimate}
+>
+  <div class="ascii-square" aria-label="Interactive ASCII Grid"></div>
+</div>
+
+<style>
+  .ascii-square-wrapper {
+    width: 100%;
+    /* Default max limits kept from original layout implicitly if not overridden */
+  }
+
+  .ascii-square {
+    display: grid;
+    gap: 1px;
+    width: 100%;
+    aspect-ratio: 1;
+    user-select: none;
+    font-family: "Martian Mono", monospace;
+    font-size: 8px; /* default, overridden via inline style/classes if sizing very small */
+    line-height: 1;
+    padding: 12px;
+    background: #fafafa;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+
+  /* Specific style when instantiated as a small 48x48 icon */
+  :global(.header-square .ascii-square) {
+    padding: 3px;
+    font-size: 0px; /* Hide text if grid is too small, or rely on borders */
+    gap: 0px;
+    border: none;
+    background: transparent;
+  }
+  
+  /* Use explicit cell styles when inside small header */
+  :global(.header-square .cell) {
+    font-size: 3px; /* make chars tiny but visible */
+  }
+  :global(.header-square .cell.shape) {
+      transform: scale(1.1); /* less drastic scaling on small screens */
+  }
+
+  :global(.cell) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e0e0e0;
+    transition: color 0.6s ease;
+    cursor: default;
+  }
+
+  :global(.cell.trail) {
+    transition: color 0s;
+  }
+
+  :global(.cell.shape) {
+    transition:
+      color 0.15s ease,
+      filter 2s ease-in-out;
+    font-weight: 900;
+    transform: scale(1.3);
+  }
+
+  @keyframes idleBreath {
+    0% {
+      filter: brightness(1) saturate(1);
+    }
+    50% {
+      filter: brightness(1.5) saturate(1.3);
+    }
+    100% {
+      filter: brightness(1) saturate(1);
+    }
+  }
+
+  :global(.cell.shape.idle) {
+    animation: idleBreath 3s infinite alternate;
+  }
+</style>
+
+<script>
+  import { ICONS } from "../generated/icons";
+
+  const SHAPES = {
+    faq: { icon: "faq", color: "hsl(45, 100%, 45%)" },
+    musica: { icon: "musica", color: "hsl(280, 100%, 55%)" },
+    utilidades: { icon: "utilidades", color: "hsl(210, 100%, 50%)" },
+    color: { icon: "DaVinci_Resolve_Studio", color: "hsl(220, 90%, 55%)" },
+    organizar: { icon: "organizar", color: "hsl(140, 100%, 40%)" },
+    organizart: { icon: "organizar", color: "hsl(140, 100%, 40%)" },
+    fcpx: { icon: "fcpx", color: "hsl(310, 100%, 60%)" },
+    recursos: { icon: "recursos", color: "hsl(180, 100%, 40%)" },
+    computer: { icon: "computer", color: "hsl(25, 100%, 55%)" },
+    astro: { icon: "astro", color: "hsl(330, 100%, 55%)" },
+  };
+
+  const TITLE_MAP = {
+    faq: "faq",
+    música: "musica",
+    musica: "musica",
+    utilidades: "utilidades",
+    color: "color",
+    "gestion de color": "color",
+    organizar: "organizar",
+    organizart: "organizar",
+    "final cut pro": "fcpx",
+    recursos: "recursos",
+    computer: "computer",
+    ordenador: "computer",
+    astro: "astro",
+    blog: "astro",
+  };
+
+  const CHARS = ["░", "▒", "▓"];
+  const TRAIL_COLORS = [
+    "hsl(210,100%,60%)",
+    "hsl(280,100%,65%)",
+    "hsl(140,100%,50%)",
+    "hsl(25,100%,60%)",
+    "hsl(0,100%,65%)",
+    "hsl(180,100%,50%)",
+    "hsl(330,100%,60%)",
+    "hsl(45,100%,50%)",
+  ];
+
+  function titleToShape(title: string) {
+    const lower = title.toLowerCase();
+    for (const [keyword, shape] of Object.entries(TITLE_MAP)) {
+      if (lower.includes(keyword)) return shape;
+    }
+    return null;
+  }
+
+  const matrixCache = new Map();
+
+  function matrixToSet(
+    matrix: readonly (readonly number[])[],
+    gridSize: number,
+  ) {
+    const set = new Set();
+    const height = matrix.length;
+    const width = matrix[0].length;
+    for (let y = 0; y < gridSize; y++) {
+      for (let x = 0; x < gridSize; x++) {
+        const mx = Math.floor((x / gridSize) * width);
+        const my = Math.floor((y / gridSize) * height);
+        if (matrix[my]?.[mx]) set.add(y * gridSize + x);
+      }
+    }
+    return set;
+  }
+
+  function getIconSet(name: string, gridSize: number) {
+    const key = `${name}:${gridSize}`;
+    if (matrixCache.has(key)) return matrixCache.get(key);
+    const matrix = ICONS[name as keyof typeof ICONS];
+    if (!matrix) return new Set();
+    const set = matrixToSet(matrix, gridSize);
+    matrixCache.set(key, set);
+    return set;
+  }
+
+  function getGridSize(isHeader: boolean) {
+    if (isHeader) return 16;
+    return 32;
+  }
+
+  function randomChar() {
+    return CHARS[Math.floor(Math.random() * CHARS.length)];
+  }
+
+  function initSquares() {
+    const wrappers = document.querySelectorAll(".ascii-square-wrapper");
+
+    wrappers.forEach((wrapper) => {
+      const square = wrapper.querySelector(".ascii-square") as HTMLElement;
+      if (!square) return;
+
+      const isInteractive = wrapper.getAttribute("data-interactive") === "true";
+      const staticTitle = wrapper.getAttribute("data-title") || "";
+      const isHeader = wrapper.classList.contains("header-square");
+
+      const gridSize = getGridSize(isHeader);
+      square.innerHTML = "";
+      square.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+      const cells: HTMLElement[] = [];
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.textContent = randomChar();
+
+        if (isInteractive) {
+          cell.addEventListener("pointerover", () => {
+            if (cell.classList.contains("shape")) return;
+            cell.classList.add("trail");
+            cell.style.color =
+              TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)];
+            setTimeout(() => {
+              cell.classList.remove("trail");
+              cell.style.color = "";
+            }, 600);
+          });
+        }
+
+        square.appendChild(cell);
+        cells.push(cell);
+      }
+
+      if (isInteractive) {
+        // Clear previous event listeners by cloning rows if necessary?
+        // Actually event delegation is cleaner if multiple instances, but fine for now.
+        const articleRows = document.querySelectorAll(
+          ".article-row, .experiment-row",
+        );
+        articleRows.forEach((row) => {
+          // Careful: this runs once per init, attaching multiple listeners if re-inited.
+          const handleEnter = () => {
+            const title = row.querySelector(".title")?.textContent ?? "";
+            drawShape(cells, gridSize, titleToShape(title), false);
+          };
+          const handleLeave = () => clearShape(square);
+
+          row.addEventListener("mouseenter", handleEnter);
+          row.addEventListener("mouseleave", handleLeave);
+        });
+      }
+
+      if (!isInteractive && staticTitle) {
+        drawShape(cells, gridSize, titleToShape(staticTitle), true);
+      }
+    });
+  }
+
+  function drawShape(
+    cells: HTMLElement[],
+    gridSize: number,
+    shapeKey: string | null,
+    isStatic: boolean,
+  ) {
+    if (!shapeKey) return;
+    const shape = SHAPES[shapeKey as keyof typeof SHAPES];
+    if (!shape) return;
+
+    const active = getIconSet(shape.icon, gridSize);
+    const [, h] = shape.color.match(/hsl\((\d+)/) ?? [];
+
+    active.forEach((idx: number) => {
+      const cell = cells[idx];
+      if (!cell) return;
+      cell.classList.add("shape");
+      if (isStatic) {
+        cell.classList.add("idle");
+        // Stagger the animation so they 'twinkle'
+        cell.style.animationDelay = `${Math.random() * 2}s`;
+      }
+      cell.textContent = "▓";
+      const l = 35 + Math.random() * 20;
+      cell.style.color = `hsl(${h}, 90%, ${Math.round(l)}%)`;
+    });
+  }
+
+  function clearShape(square: HTMLElement) {
+    square.querySelectorAll(".cell.shape").forEach((cell) => {
+      const htmlCell = cell as HTMLElement;
+      htmlCell.classList.remove("shape", "idle");
+      htmlCell.textContent = randomChar();
+      htmlCell.style.color = "";
+      htmlCell.style.animationDelay = "";
+    });
+  }
+
+  // Use a simple guard to avoid double-binding if initGrid is called multiple times.
+  // Although matrixCache cleared indicates a full redraw needed.
+  initSquares();
+
+  let resizeTimer: ReturnType<typeof setTimeout>;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      matrixCache.clear();
+      initSquares();
+    }, 150);
+  });
+
+  document.addEventListener("astro:after-swap", () => {
+    matrixCache.clear();
+    initSquares();
+  });
+</script>
