@@ -320,7 +320,12 @@ const {
     }
   }
 
-  document
-    .querySelectorAll(".ascii-square-wrapper")
-    .forEach((wrapper) => initSquare(wrapper as HTMLElement));
+  function initSquares() {
+    document
+      .querySelectorAll(".ascii-square-wrapper")
+      .forEach((wrapper) => initSquare(wrapper as HTMLElement));
+  }
+
+  initSquares();
+  document.addEventListener("astro:page-load", initSquares);
 </script>
