@@ -70,4 +70,3 @@ A veces, aunque hayamos desactivado todo lo previo, se van acumulando archivos d
   - [Final Cut Pro Voice Isolation Audio Noise Reduction - YouTube](https://www.youtube.com/watch?v=fjUG1t42mB8)
   - [Thomas Grove Carter - YouTube](https://www.youtube.com/@ThomasGroveCarter/videos)
   - [Final Cut Pro - Ecosistema - Apple (ES)](https://www.apple.com/es/final-cut-pro/resources/ecosystem/)
-

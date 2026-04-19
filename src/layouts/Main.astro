@@ -2,10 +2,11 @@
 import { ClientRouter } from "astro:transitions";
 import Nav from "../components/Nav.astro";
 import Seo from "../components/Seo.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import "../styles/global.css";
 const {
-  title,
-  description,
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
   url = Astro.url,
   image,
   frontmatter,
@@ -31,10 +32,10 @@ const {
     />
     <Seo {title} {description} {url} {image} {frontmatter} {robots} />
   </head>
-  <Nav />
-  <main class={fullWidth ? "w-full" : "container"}>
-    <slot />
-    <!-- Working on i18n -->
-    <!-- <Footer></Footer> -->
-  </main>
+  <body>
+    <Nav />
+    <main class={fullWidth ? "w-full" : "container"}>
+      <slot />
+    </main>
+  </body>
 </html>

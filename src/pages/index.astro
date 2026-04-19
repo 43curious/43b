@@ -3,21 +3,35 @@ import Main from "../layouts/Main.astro";
 import AsciiSquare from "../components/AsciiSquare.astro";
 import ContentTabs from "../components/ContentTabs.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import PrefetchLink from "../components/PrefetchLink.astro";
+import { transactionSpecs } from "../data/transactions.data";
+import { SITE_DESCRIPTION } from "../consts";
 ---
 
-<Main title="Jon Castro">
+<Main title="Jon Castro" description={SITE_DESCRIPTION}>
   <div class="home-wrapper">
     <div class="hero">
       <div class="ascii-square-outer">
         <div class="hero-text-overlay">
           <h1 class="hero-name">JON CASTRO</h1>
           <p class="hero-bio dim">
-            I build and use tools. This is a collection of technical guides and
-            experiments—a reflection of my workflow and interests.
+            Diseno y utilizo herramientas. Este espacio reune guias tecnicas y
+            experimentos que reflejan mi forma de trabajar y mis intereses.
           </p>
         </div>
         <AsciiSquare interactive={true} class="max-w-[320px]" transitionName="ascii-hero" />
       </div>
+    </div>
+
+    <div class="mb-12">
+      <PrefetchLink 
+        href="/expense-tracker" 
+        spec={transactionSpecs.list}
+        className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors"
+      >
+        <span>View Snappy Expense Tracker</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </PrefetchLink>
     </div>
 
     <ContentTabs />
@@ -56,7 +70,6 @@ import SiteFooter from "../components/SiteFooter.astro";
     font-weight: 500;
     font-size: 16px;
     text-transform: uppercase;
-    white-space: nowrap;
     margin-bottom: 12px;
     letter-spacing: -1px;
   }

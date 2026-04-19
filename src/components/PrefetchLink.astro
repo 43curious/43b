@@ -1,0 +1,64 @@
+---
+interface Props {
+  href: string;
+  className?: string;
+  spec?: { key: string; fetcher: () => Promise<any> };
+}
+
+const { href, className, spec } = Astro.props;
+---
+
+<a 
+  href={href} 
+  class={className} 
+  data-astro-prefetch
+  data-prefetch-key={spec?.key}
+>
+  <slot />
+</a>
+
+<script>
+  import { queryClient } from '../lib/cache';
+  import { transactionSpecs, categorySpecs } from '../data/transactions.data';
+
+  // Map of keys to fetchers for client-side lookups
+  const fetchers: Record<string, () => Promise<any>> = {
+    [transactionSpecs.list.key]: transactionSpecs.list.fetcher,
+    [categorySpecs.list.key]: categorySpecs.list.fetcher,
+  };
+
+  // Function to handle dynamic fetchers (like detail pages)
+  const getFetcher = (key: string) => {
+    if (fetchers[key]) return fetchers[key];
+    
+    // Check for dynamic transaction detail keys
+    if (key.startsWith('transaction:')) {
+      const id = key.split(':')[1];
+      return transactionSpecs.detail(id).fetcher;
+    }
+    return null;
+  };
+
+  const links = document.querySelectorAll('a[data-prefetch-key]');
+
+  links.forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      const key = link.getAttribute('data-prefetch-key');
+      if (key) {
+        const fetcher = getFetcher(key);
+        if (fetcher) {
+          queryClient.prewarm(key, fetcher);
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  a {
+    transition: opacity 0.2s;
+  }
+  a:hover {
+    opacity: 0.8;
+  }
+</style>

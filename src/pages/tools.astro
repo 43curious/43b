@@ -2,177 +2,275 @@
 import Main from "../layouts/Main.astro";
 ---
 
-<Main title="Tools" fullWidth={true} />
+<Main title="Herramientas" fullWidth={true} />
 
 <div class="tools-wrapper">
   <div class="tools-container">
-    <!-- 1. Preview Bar (Now at the top) -->
-    <div id="previewBar" class="preview-bar">
-      <div class="preview-frame-wrap">
-        <div id="previewFrame" class="preview-frame"></div>
+    <section class="tool-section">
+      <div class="section-head">
+        <p class="section-kicker mono">VIDEO</p>
+        <h2 class="section-title">Resolucion y formato</h2>
       </div>
-      <div class="preview-info">
-        <div class="pi-block">
-          <div class="pi-label">NAME</div>
-          <div id="piName" class="pi-value"></div>
-        </div>
-        <div class="pi-block">
-          <div class="pi-label">DIMENSIONS</div>
-          <div id="piDims" class="pi-value"></div>
-        </div>
-        <div class="pi-block">
-          <div class="pi-label">RATIO</div>
-          <div id="piRatio" class="pi-value"></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- 2. Dual Selector Row (Generator) -->
-    <div id="searchRow" class="search-row dual">
-      <div class="selector-group">
-        <label for="resInput">RESOLUTION</label>
-        <div class="input-wrap">
-          <input id="resInput" type="text" placeholder="e.g. 1080, 4K, 8K" autocomplete="off" spellcheck="false" />
-          <div id="resList" class="custom-dropdown"></div>
+      <div class="preview-bar">
+        <div class="preview-frame-wrap">
+          <div id="previewFrame" class="preview-frame"></div>
+        </div>
+
+        <div class="preview-info">
+          <div class="pi-block">
+            <div class="pi-label">RESOLUCION</div>
+            <div id="piName" class="pi-value"></div>
+          </div>
+          <div class="pi-block">
+            <div class="pi-label">DIMENSIONES</div>
+            <div id="piDims" class="pi-value"></div>
+          </div>
+          <div class="pi-block">
+            <div class="pi-label">RELACION</div>
+            <div id="piRatio" class="pi-value"></div>
+          </div>
         </div>
       </div>
-      <div class="selector-group">
-        <label for="ratioInput">ASPECT RATIO</label>
-        <div class="input-wrap">
-          <input id="ratioInput" type="text" placeholder="e.g. 16:9, 2.39" autocomplete="off" spellcheck="false" />
-          <div id="ratioList" class="custom-dropdown"></div>
+
+      <div class="selector-row">
+        <div class="selector-group">
+          <label for="resolutionSelect">RESOLUCION</label>
+          <select id="resolutionSelect"></select>
+        </div>
+
+        <div class="selector-group">
+          <label for="formatSelect">FORMATO</label>
+          <select id="formatSelect"></select>
         </div>
       </div>
-      <button id="customTrigger">+ Custom</button>
-    </div>
 
-    <!-- 3. Custom Dimensions Row -->
-    <div id="customRow" class="custom-row">
-      <div class="input-group">
-        <label for="cW">WIDTH</label>
-        <input id="cW" type="number" placeholder="3840" style="width: 80px" />
-      </div>
-      <div class="input-group">
-        <label for="cH">HEIGHT</label>
-        <input id="cH" type="number" placeholder="2160" style="width: 80px" />
-      </div>
-      <div class="input-group">
-        <label for="customRatio">RATIO</label>
-        <input id="customRatio" type="text" readonly style="width: 70px" />
-      </div>
-      <button id="applyBtn">Apply</button>
-    </div>
+      <div class="custom-box">
+        <div class="custom-head">
+          <p class="custom-title">Cuadrado personalizado</p>
+          <p class="custom-copy">Introduce ancho y alto y la relacion se calcula automaticamente.</p>
+        </div>
 
-    <!-- Reference List -->
-    <div class="section-header">REFERENCE</div>
-    <div id="resultsList"></div>
+        <div class="custom-grid">
+          <div class="selector-group">
+            <label for="customWidth">ANCHO</label>
+            <input id="customWidth" type="number" min="1" placeholder="3840" />
+          </div>
+          <div class="selector-group">
+            <label for="customHeight">ALTO</label>
+            <input id="customHeight" type="number" min="1" placeholder="2160" />
+          </div>
+          <div class="selector-group">
+            <label for="customRatio">RELACION</label>
+            <input id="customRatio" type="text" readonly />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tool-section">
+      <div class="section-head">
+        <p class="section-kicker mono">AUDIO</p>
+        <h2 class="section-title">Calculadora de loudness</h2>
+      </div>
+
+      <div class="tool-grid">
+        <div class="selector-group">
+          <label for="loudnessTarget">DESTINO</label>
+          <select id="loudnessTarget"></select>
+        </div>
+        <div class="selector-group">
+          <label for="currentLufs">LOUDNESS ACTUAL (LUFS)</label>
+          <input id="currentLufs" type="number" step="0.1" placeholder="-18" />
+        </div>
+        <div class="selector-group">
+          <label for="truePeak">TRUE PEAK ACTUAL (dBTP)</label>
+          <input id="truePeak" type="number" step="0.1" placeholder="-2" />
+        </div>
+      </div>
+
+      <div class="result-panel">
+        <div class="result-item">
+          <div class="pi-label">OBJETIVO</div>
+          <div id="targetValue" class="pi-value"></div>
+        </div>
+        <div class="result-item">
+          <div class="pi-label">AJUSTE RECOMENDADO</div>
+          <div id="gainAdjustment" class="pi-value"></div>
+        </div>
+        <div class="result-item">
+          <div class="pi-label">TRUE PEAK MAXIMO</div>
+          <div id="peakLimit" class="pi-value"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tool-section">
+      <div class="section-head">
+        <p class="section-kicker mono">POST</p>
+        <h2 class="section-title">Nombre de proyecto y estructura</h2>
+      </div>
+
+      <div class="tool-grid tool-grid-naming">
+        <div class="selector-group">
+          <label for="clientInput">CLIENTE</label>
+          <input id="clientInput" type="text" placeholder="Acme" />
+        </div>
+        <div class="selector-group">
+          <label for="projectInput">PROYECTO</label>
+          <input id="projectInput" type="text" placeholder="Campana verano" />
+        </div>
+        <div class="selector-group">
+          <label for="dateInput">FECHA</label>
+          <input id="dateInput" type="date" />
+        </div>
+      </div>
+
+      <div class="result-panel naming-panel">
+        <div class="result-item result-item-wide">
+          <div class="pi-label">NOMBRE SUGERIDO</div>
+          <div id="projectSlug" class="pi-value"></div>
+        </div>
+      </div>
+
+      <pre id="folderStructure" class="folder-structure"></pre>
+    </section>
   </div>
 </div>
 
-<style is:global>
-  :root {
-    --mono: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --text: #111;
-    --dim: #999;
-    --line: #e5e5e5;
-    --hover: #f7f7f7;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  }
-
+<style>
   .tools-wrapper {
-    background: #fff;
     min-height: 100vh;
+    background: #fff;
     color: var(--text);
     font-size: 12px;
-    -webkit-font-smoothing: antialiased;
   }
 
   .tools-container {
     max-width: 760px;
     margin: 0 auto;
-    padding: 0px 24px 80px;
+    padding: 0 24px 80px;
   }
 
-  input {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text);
-    background: #fff;
-    border: 1px solid var(--line);
-    padding: 7px 10px;
-    outline: none;
-    border-radius: 0;
-    transition: border-color 0.12s;
+  .tool-section {
+    padding: 24px 0 40px;
+    border-bottom: 1px solid var(--line);
   }
-  input:focus { border-color: #bbb; }
-  input::placeholder { color: var(--dim); }
+
+  .tool-section:last-child {
+    border-bottom: 0;
+    padding-bottom: 80px;
+  }
+
+  .section-head {
+    margin-bottom: 24px;
+  }
+
+  .section-kicker {
+    margin: 0 0 6px;
+    color: var(--dim);
+    letter-spacing: 0.14em;
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .section-title::after {
+    display: none;
+  }
 
   .preview-bar {
     display: flex;
     flex-direction: column;
-    margin-bottom: 32px;
-    padding: 24px 0 40px;
-    border-bottom: 1px solid var(--line);
     gap: 32px;
     align-items: center;
+    margin-bottom: 24px;
   }
 
   .preview-frame-wrap {
-    width: 100%;
-    max-width: 600px;
-    height: 320px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--hover);
+    width: 100%;
+    max-width: 600px;
+    height: 320px;
+    background: #fafafa;
+    border: 1px solid var(--line);
   }
 
-  #previewFrame {
-    border: 1px solid var(--text);
-    transition: all 0.2s ease-out;
-    background: #fff;
+  .preview-frame {
     position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    background: #fff;
+    border: 1px solid var(--text);
+    transition: width 0.2s ease, height 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   }
 
-  #previewFrame::before,
-  #previewFrame::after {
+  .preview-frame::before,
+  .preview-frame::after {
     content: "";
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     background: var(--line);
+    transform: translate(-50%, -50%);
   }
-  #previewFrame::before { width: 1px; height: 30%; }
-  #previewFrame::after { height: 1px; width: 30%; }
 
-  .preview-info {
-    width: 100%;
+  .preview-frame::before {
+    width: 1px;
+    height: 30%;
+  }
+
+  .preview-frame::after {
+    width: 30%;
+    height: 1px;
+  }
+
+  .preview-info,
+  .result-panel {
     display: flex;
     justify-content: space-between;
-    max-width: 560px;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .pi-block,
+  .result-item {
+    min-width: 0;
+    flex: 1;
   }
 
   .pi-label {
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 0.1em;
     margin-bottom: 4px;
+    color: var(--dim);
     font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
   }
 
   .pi-value {
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
-    font-family: var(--font-mono);
+    line-height: 1.45;
   }
 
-  .search-row.dual {
+  .selector-row,
+  .tool-grid,
+  .custom-grid {
     display: flex;
     gap: 16px;
-    align-items: flex-end;
-    margin-bottom: 24px;
+    align-items: end;
+  }
+
+  .tool-grid {
+    margin-bottom: 20px;
+  }
+
+  .tool-grid-naming {
+    margin-bottom: 20px;
   }
 
   .selector-group {
@@ -183,437 +281,302 @@ import Main from "../layouts/Main.astro";
   }
 
   .selector-group label {
+    color: var(--text);
     font-size: 10px;
     font-weight: 600;
-    color: var(--text);
     letter-spacing: 0.1em;
   }
 
-  .input-wrap { position: relative; width: 100%; }
-  .input-wrap input { width: 100%; }
-
-  .custom-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1px solid var(--text);
-    border-top: none;
-    z-index: 100;
-    max-height: 240px;
-    overflow-y: auto;
-    display: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  .custom-dropdown.on { display: block; }
-
-  .dropdown-item {
-    padding: 8px 10px;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    border-bottom: 1px solid var(--line);
-    transition: background 0.1s;
-    color: var(--text);
-  }
-  .dropdown-item:last-child { border-bottom: none; }
-  .dropdown-item:hover { background: var(--hover); }
-
-  #customTrigger {
-    background: none;
+  .selector-group select,
+  .selector-group input {
+    width: 100%;
+    padding: 9px 10px;
     border: 1px solid var(--line);
-    color: var(--dim);
+    border-radius: 0;
+    background: #fff;
+    color: var(--text);
+    font-family: var(--mono);
     font-size: 12px;
-    padding: 7px 14px;
-    cursor: pointer;
-    height: 33px;
-  }
-  #customTrigger.on { border-color: var(--text); color: var(--text); }
-
-  .custom-row {
-    display: none;
-    gap: 8px;
-    margin-bottom: 32px;
-    align-items: flex-end;
-  }
-  .custom-row.on { display: flex; }
-
-  #applyBtn {
-    background: var(--text);
-    color: #fff;
-    border: none;
-    font-size: 11px;
-    padding: 0 16px;
-    height: 32px;
-    cursor: pointer;
+    outline: none;
+    appearance: none;
   }
 
-  .section-header {
-    font-size: 11px;
+  .selector-group select:focus,
+  .selector-group input:focus {
+    border-color: #bcbcbc;
+  }
+
+  .custom-box {
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    background: #fafafa;
+  }
+
+  .custom-head {
+    margin-bottom: 14px;
+  }
+
+  .custom-title {
+    margin: 0 0 4px;
     font-weight: 600;
-    letter-spacing: 0.15em;
+  }
+
+  .custom-copy {
+    margin: 0;
     color: var(--dim);
-    padding: 48px 0 16px;
-    border-top: 1px solid var(--line);
-    text-transform: uppercase;
   }
 
-  .group-label {
+  .naming-panel {
+    margin-bottom: 16px;
+  }
+
+  .result-item-wide {
+    flex: 1 1 100%;
+  }
+
+  .folder-structure {
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--line);
+    background: #fafafa !important;
+    color: var(--text);
+    font-family: var(--font-mono);
     font-size: 12px;
-    font-weight: 600;
-    padding: 14px 0 4px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    border-top: 1px solid var(--line);
+    line-height: 1.6;
+    overflow-x: auto;
   }
-  .group-label:first-of-type { border-top: none; }
 
-  .row {
-    display: grid;
-    grid-template-columns: 1fr 100px 80px;
-    padding: 6px 8px;
-    margin: 0 -8px;
-    cursor: pointer;
-    border-radius: 2px;
-    gap: 12px;
-    align-items: center;
+  @media (max-width: 640px) {
+    .tools-container {
+      padding: 0 16px 64px;
+    }
+
+    .preview-info,
+    .selector-row,
+    .tool-grid,
+    .custom-grid,
+    .result-panel {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .preview-frame-wrap {
+      height: 240px;
+    }
   }
-  .row:hover { background: var(--hover); }
-  .row.sel { background: #f0f0f0; }
-
-  .r-name { font-size: 11px; font-weight: 500; font-family: var(--font-mono); }
-  .r-dims, .r-ratio { font-size: 10px; font-weight: 500; color: var(--dim); font-family: var(--font-mono); text-align: right; }
-  .r-dims { text-align: left; }
 </style>
 
 <script>
-  interface ResolutionItem {
-    name: string; w: number; h: number; cat: string; res: string; ratio: string;
+  interface ResolutionOption {
+    id: string;
+    label: string;
+    width: number;
+    height: number;
   }
 
-  const CAT_ORDER = [
-    "Cinema DCP 4K", "8K", "6K", "4K", "3K", "2K", "Cinema DCP 2K", 
-    "8K UHD", "5K", "4K UHD", "3K UHD", "1080p", "720p"
+  interface FormatOption {
+    id: string;
+    label: string;
+    ratio: number;
+  }
+
+  interface LoudnessTarget {
+    id: string;
+    label: string;
+    lufs: number;
+    peak: number;
+  }
+
+  const RESOLUTIONS: ResolutionOption[] = [
+    { id: "720p", label: "HD 720p", width: 1280, height: 720 },
+    { id: "1080p", label: "Full HD 1080p", width: 1920, height: 1080 },
+    { id: "4k", label: "UHD 4K", width: 3840, height: 2160 },
+    { id: "6k", label: "6K", width: 6144, height: 3456 },
+    { id: "8k", label: "8K", width: 7680, height: 4320 },
   ];
 
-  const DB: ResolutionItem[] = [
-    // Cinema DCP 4K
-    { name: "Flat (1.85)", w: 3996, h: 2160, cat: "Cinema DCP 4K", res: "DCP 4K", ratio: "1.85" },
-    { name: "Scope (2.39)", w: 4096, h: 1716, cat: "Cinema DCP 4K", res: "DCP 4K", ratio: "2.39" },
-    { name: "Full Container (1.90)", w: 4096, h: 2160, cat: "Cinema DCP 4K", res: "DCP 4K", ratio: "1.90" },
-    // 8K
-    { name: "0.80 (4:5)", w: 3686, h: 4608, cat: "8K", res: "8K", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 5760, h: 4608, cat: "8K", res: "8K", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 6144, h: 4608, cat: "8K", res: "8K", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 7680, h: 4608, cat: "8K", res: "8K", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 8192, h: 4608, cat: "8K", res: "8K", ratio: "16:9" },
-    { name: "1.85", w: 8192, h: 4428, cat: "8K", res: "8K", ratio: "1.85" },
-    { name: "1.90", w: 8192, h: 4320, cat: "8K", res: "8K", ratio: "1.90" },
-    { name: "2.00", w: 8192, h: 4096, cat: "8K", res: "8K", ratio: "2:1" },
-    { name: "2.35", w: 8192, h: 3486, cat: "8K", res: "8K", ratio: "2.35" },
-    { name: "2.37", w: 8192, h: 3456, cat: "8K", res: "8K", ratio: "2.37" },
-    { name: "2.39", w: 8192, h: 3428, cat: "8K", res: "8K", ratio: "2.39" },
-    { name: "2.40", w: 8192, h: 3414, cat: "8K", res: "8K", ratio: "2.40" },
-    { name: "2.44", w: 8192, h: 3356, cat: "8K", res: "8K", ratio: "2.44" },
-    // 6K
-    { name: "0.80 (4:5)", w: 2764, h: 3456, cat: "6K", res: "6K", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 4320, h: 3456, cat: "6K", res: "6K", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 4608, h: 3456, cat: "6K", res: "6K", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 5760, h: 3456, cat: "6K", res: "6K", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 6144, h: 3456, cat: "6K", res: "6K", ratio: "16:9" },
-    { name: "1.85", w: 6144, h: 3320, cat: "6K", res: "6K", ratio: "1.85" },
-    { name: "1.90", w: 6144, h: 3234, cat: "6K", res: "6K", ratio: "1.90" },
-    { name: "2.00", w: 6144, h: 3072, cat: "6K", res: "6K", ratio: "2:1" },
-    { name: "2.35", w: 6144, h: 2614, cat: "6K", res: "6K", ratio: "2.35" },
-    { name: "2.37", w: 6144, h: 2592, cat: "6K", res: "6K", ratio: "2.37" },
-    { name: "2.39", w: 6144, h: 2570, cat: "6K", res: "6K", ratio: "2.39" },
-    { name: "2.40", w: 6144, h: 2560, cat: "6K", res: "6K", ratio: "2.40" },
-    { name: "2.44", w: 6144, h: 2518, cat: "6K", res: "6K", ratio: "2.44" },
-    // 4K
-    { name: "0.80 (4:5)", w: 1842, h: 2304, cat: "4K", res: "4K", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 2880, h: 2304, cat: "4K", res: "4K", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 3072, h: 2304, cat: "4K", res: "4K", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 3840, h: 2304, cat: "4K", res: "4K", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 4096, h: 2304, cat: "4K", res: "4K", ratio: "16:9" },
-    { name: "1.85", w: 4096, h: 2214, cat: "4K", res: "4K", ratio: "1.85" },
-    { name: "1.90", w: 4096, h: 2160, cat: "4K", res: "4K", ratio: "1.90" },
-    { name: "2.00", w: 4096, h: 2048, cat: "4K", res: "4K", ratio: "2:1" },
-    { name: "2.35", w: 4096, h: 1742, cat: "4K", res: "4K", ratio: "2.35" },
-    { name: "2.37", w: 4096, h: 1728, cat: "4K", res: "4K", ratio: "2.37" },
-    { name: "2.39", w: 4096, h: 1716, cat: "4K", res: "4K", ratio: "2.39" },
-    { name: "2.40", w: 4096, h: 1706, cat: "4K", res: "4K", ratio: "2.40" },
-    { name: "2.44", w: 4096, h: 1678, cat: "4K", res: "4K", ratio: "2.44" },
-    // 3K
-    { name: "0.80 (4:5)", w: 1382, h: 1728, cat: "3K", res: "3K", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 2160, h: 1728, cat: "3K", res: "3K", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 2304, h: 1728, cat: "3K", res: "3K", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 2880, h: 1728, cat: "3K", res: "3K", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 3072, h: 1728, cat: "3K", res: "3K", ratio: "16:9" },
-    { name: "1.85", w: 3072, h: 1660, cat: "3K", res: "3K", ratio: "1.85" },
-    { name: "1.90", w: 3072, h: 1620, cat: "3K", res: "3K", ratio: "1.90" },
-    { name: "2.00", w: 3072, h: 1536, cat: "3K", res: "3K", ratio: "2:1" },
-    { name: "2.35", w: 3072, h: 1306, cat: "3K", res: "3K", ratio: "2.35" },
-    { name: "2.37", w: 3072, h: 1296, cat: "3K", res: "3K", ratio: "2.37" },
-    { name: "2.39", w: 3072, h: 1284, cat: "3K", res: "3K", ratio: "2.39" },
-    { name: "2.40", w: 3072, h: 1280, cat: "3K", res: "3K", ratio: "2.40" },
-    { name: "2.44", w: 3072, h: 1259, cat: "3K", res: "3K", ratio: "2.44" },
-    // 2K
-    { name: "0.80 (4:5)", w: 922, h: 1152, cat: "2K", res: "2K", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 1440, h: 1152, cat: "2K", res: "2K", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 1536, h: 1152, cat: "2K", res: "2K", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 1920, h: 1152, cat: "2K", res: "2K", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 2048, h: 1152, cat: "2K", res: "2K", ratio: "16:9" },
-    { name: "1.85", w: 2048, h: 1106, cat: "2K", res: "2K", ratio: "1.85" },
-    { name: "1.90", w: 2048, h: 1078, cat: "2K", res: "2K", ratio: "1.90" },
-    { name: "2.00", w: 2048, h: 1024, cat: "2K", res: "2K", ratio: "2:1" },
-    { name: "2.35", w: 2048, h: 870, cat: "2K", res: "2K", ratio: "2.35" },
-    { name: "2.37", w: 2048, h: 864, cat: "2K", res: "2K", ratio: "2.37" },
-    { name: "2.39", w: 2048, h: 858, cat: "2K", res: "2K", ratio: "2.39" },
-    { name: "2.40", w: 2048, h: 852, cat: "2K", res: "2K", ratio: "2.40" },
-    { name: "2.44", w: 2048, h: 838, cat: "2K", res: "2K", ratio: "2.44" },
-    // Cinema DCP 2K
-    { name: "Flat (1.85)", w: 1998, h: 1080, cat: "Cinema DCP 2K", res: "DCP 2K", ratio: "1.85" },
-    { name: "Scope (2.39)", w: 2048, h: 858, cat: "Cinema DCP 2K", res: "DCP 2K", ratio: "2.39" },
-    { name: "Full Container (1.90)", w: 2048, h: 1080, cat: "Cinema DCP 2K", res: "DCP 2K", ratio: "1.90" },
-    // 8K UHD
-    { name: "0.80 (4:5)", w: 2765, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 5400, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 5760, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 7200, h: 3456, cat: "8K UHD", res: "8K UHD", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 7680, h: 4320, cat: "8K UHD", res: "8K UHD", ratio: "16:9" },
-    { name: "1.85", w: 7680, h: 4150, cat: "8K UHD", res: "8K UHD", ratio: "1.85" },
-    { name: "1.90", w: 7680, h: 4042, cat: "8K UHD", res: "8K UHD", ratio: "1.90" },
-    { name: "2.00", w: 7680, h: 3840, cat: "8K UHD", res: "8K UHD", ratio: "2:1" },
-    { name: "2.35", w: 7680, h: 3268, cat: "8K UHD", res: "8K UHD", ratio: "2.35" },
-    { name: "2.37", w: 7680, h: 3240, cat: "8K UHD", res: "8K UHD", ratio: "2.37" },
-    { name: "2.39", w: 7680, h: 3214, cat: "8K UHD", res: "8K UHD", ratio: "2.39" },
-    { name: "2.40", w: 7680, h: 3200, cat: "8K UHD", res: "8K UHD", ratio: "2.40" },
-    { name: "2.44", w: 7680, h: 3148, cat: "8K UHD", res: "8K UHD", ratio: "2.44" },
-    // 5K
-    { name: "0.80 (4:5)", w: 2304, h: 2880, cat: "5K", res: "5K", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 3600, h: 2880, cat: "5K", res: "5K", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 3840, h: 2880, cat: "5K", res: "5K", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 4800, h: 2880, cat: "5K", res: "5K", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 5120, h: 2880, cat: "5K", res: "5K", ratio: "16:9" },
-    { name: "1.85", w: 5120, h: 2768, cat: "5K", res: "5K", ratio: "1.85" },
-    { name: "1.90", w: 5120, h: 2700, cat: "5K", res: "5K", ratio: "1.90" },
-    { name: "2.00", w: 5120, h: 2560, cat: "5K", res: "5K", ratio: "2:1" },
-    { name: "2.35", w: 5120, h: 2178, cat: "5K", res: "5K", ratio: "2.35" },
-    { name: "2.37", w: 5120, h: 2160, cat: "5K", res: "5K", ratio: "2.37" },
-    { name: "2.39", w: 5120, h: 2142, cat: "5K", res: "5K", ratio: "2.39" },
-    { name: "2.40", w: 5120, h: 2136, cat: "5K", res: "5K", ratio: "2.40" },
-    { name: "2.44", w: 5120, h: 2098, cat: "5K", res: "5K", ratio: "2.44" },
-    // 4K UHD
-    { name: "0.80 (4:5)", w: 1728, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 2700, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 2880, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 3600, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 3840, h: 2160, cat: "4K UHD", res: "4K UHD", ratio: "16:9" },
-    { name: "1.85", w: 3840, h: 2076, cat: "4K UHD", res: "4K UHD", ratio: "1.85" },
-    { name: "1.90", w: 3840, h: 2020, cat: "4K UHD", res: "4K UHD", ratio: "1.90" },
-    { name: "2.00", w: 3840, h: 1920, cat: "4K UHD", res: "4K UHD", ratio: "2:1" },
-    { name: "2.35", w: 3840, h: 1634, cat: "4K UHD", res: "4K UHD", ratio: "2.35" },
-    { name: "2.37", w: 3840, h: 1620, cat: "4K UHD", res: "4K UHD", ratio: "2.37" },
-    { name: "2.39", w: 3840, h: 1606, cat: "4K UHD", res: "4K UHD", ratio: "2.39" },
-    { name: "2.40", w: 3840, h: 1600, cat: "4K UHD", res: "4K UHD", ratio: "2.40" },
-    { name: "2.44", w: 3840, h: 1574, cat: "4K UHD", res: "4K UHD", ratio: "2.44" },
-    // 3K UHD
-    { name: "0.80 (4:5)", w: 1296, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 2024, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 2160, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 2700, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 2880, h: 1620, cat: "3K UHD", res: "3K UHD", ratio: "16:9" },
-    { name: "1.85", w: 2880, h: 1556, cat: "3K UHD", res: "3K UHD", ratio: "1.85" },
-    { name: "1.90", w: 2880, h: 1516, cat: "3K UHD", res: "3K UHD", ratio: "1.90" },
-    { name: "2.00", w: 2880, h: 1440, cat: "3K UHD", res: "3K UHD", ratio: "2:1" },
-    { name: "2.35", w: 2880, h: 1226, cat: "3K UHD", res: "3K UHD", ratio: "2.35" },
-    { name: "2.37", w: 2880, h: 1216, cat: "3K UHD", res: "3K UHD", ratio: "2.37" },
-    { name: "2.39", w: 2880, h: 1204, cat: "3K UHD", res: "3K UHD", ratio: "2.39" },
-    { name: "2.40", w: 2880, h: 1200, cat: "3K UHD", res: "3K UHD", ratio: "2.40" },
-    { name: "2.44", w: 2880, h: 1180, cat: "3K UHD", res: "3K UHD", ratio: "2.44" },
-    // 1080p
-    { name: "0.80 (4:5)", w: 864, h: 1080, cat: "1080p", res: "1080p", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 1350, h: 1080, cat: "1080p", res: "1080p", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 1440, h: 1080, cat: "1080p", res: "1080p", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 1800, h: 1080, cat: "1080p", res: "1080p", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 1920, h: 1080, cat: "1080p", res: "1080p", ratio: "16:9" },
-    { name: "1.85", w: 1920, h: 1038, cat: "1080p", res: "1080p", ratio: "1.85" },
-    { name: "1.90", w: 1920, h: 1010, cat: "1080p", res: "1080p", ratio: "1.90" },
-    { name: "2.00", w: 1920, h: 960, cat: "1080p", res: "1080p", ratio: "2:1" },
-    { name: "2.35", w: 1920, h: 816, cat: "1080p", res: "1080p", ratio: "2.35" },
-    { name: "2.37", w: 1920, h: 810, cat: "1080p", res: "1080p", ratio: "2.37" },
-    { name: "2.39", w: 1920, h: 802, cat: "1080p", res: "1080p", ratio: "2.39" },
-    { name: "2.40", w: 1920, h: 800, cat: "1080p", res: "1080p", ratio: "2.40" },
-    { name: "2.44", w: 1920, h: 786, cat: "1080p", res: "1080p", ratio: "2.44" },
-    // 720p
-    { name: "0.80 (4:5)", w: 576, h: 720, cat: "720p", res: "720p", ratio: "4:5" },
-    { name: "1.25 (5:4)", w: 900, h: 720, cat: "720p", res: "720p", ratio: "5:4" },
-    { name: "1.33 (4:3)", w: 960, h: 720, cat: "720p", res: "720p", ratio: "4:3" },
-    { name: "1.66 (5:3)", w: 1200, h: 720, cat: "720p", res: "720p", ratio: "5:3" },
-    { name: "1.78 (16:9)", w: 1280, h: 720, cat: "720p", res: "720p", ratio: "16:9" },
-    { name: "1.85", w: 1280, h: 692, cat: "720p", res: "720p", ratio: "1.85" },
-    { name: "1.90", w: 1280, h: 674, cat: "720p", res: "720p", ratio: "1.90" },
-    { name: "2.00", w: 1280, h: 640, cat: "720p", res: "720p", ratio: "2:1" },
-    { name: "2.35", w: 1280, h: 544, cat: "720p", res: "720p", ratio: "2.35" },
-    { name: "2.37", w: 1280, h: 540, cat: "720p", res: "720p", ratio: "2.37" },
-    { name: "2.39", w: 1280, h: 536, cat: "720p", res: "720p", ratio: "2.39" },
-    { name: "2.40", w: 1280, h: 532, cat: "720p", res: "720p", ratio: "2.40" },
-    { name: "2.44", w: 1280, h: 524, cat: "720p", res: "720p", ratio: "2.44" },
+  const FORMATS: FormatOption[] = [
+    { id: "16x9", label: "16:9", ratio: 16 / 9 },
+    { id: "239", label: "2.39", ratio: 2.39 },
+    { id: "2x1", label: "2:1", ratio: 2 },
+    { id: "4x3", label: "4:3", ratio: 4 / 3 },
+    { id: "1x1", label: "1:1 Cuadrado", ratio: 1 },
+    { id: "4x5", label: "4:5 Vertical", ratio: 4 / 5 },
+    { id: "9x16", label: "9:16 Vertical", ratio: 9 / 16 },
   ];
 
-  const RES_OPTS = ["DCP 4K", "8K", "6K", "4K", "3K", "2K", "DCP 2K", "8K UHD", "5K", "4K UHD", "3K UHD", "1080p", "720p"];
-  const RATIO_OPTS = ["1.85 (Flat)", "2.39 (Scope)", "1.90", "16:9", "2:1", "4:3", "4:5", "5:4", "5:3", "2.35", "2.37", "2.40", "2.44"];
+  const LOUDNESS_TARGETS: LoudnessTarget[] = [
+    { id: "youtube", label: "YouTube", lufs: -14, peak: -1 },
+    { id: "spotify-video", label: "Plataformas / web", lufs: -16, peak: -1 },
+    { id: "broadcast", label: "Broadcast EBU R128", lufs: -23, peak: -1 },
+  ];
 
-  const RES_MAP: Record<string, number> = {
-    "HD": 720, "720p": 720, "FHD": 1080, "1080p": 1080, "2K": 1152, "DCP 2K": 1080, "3K": 1728, "3K UHD": 1620,
-    "4K": 2304, "4K UHD": 2160, "DCP 4K": 2160, "5K": 2880, "6K": 3456, "8K": 4608, "8K UHD": 4320
-  };
-  const RATIO_MAP: Record<string, number> = {
-    "16:9": 1.777, "1.78": 1.777, "1.85": 1.85, "2.39": 2.39, "2.40": 2.40, "2:1": 2.0, "4:3": 1.333,
-    "4:5": 0.8, "5:4": 1.25, "5:3": 1.666, "1.90": 1.9, "2.35": 2.35, "2.37": 2.37, "2.44": 2.44
-  };
-
-  let resVal = ""; 
-  let ratioVal = "";
-  let selected_item: ResolutionItem | null = null;
-  const collapsedGroups = new Set(CAT_ORDER);
-
-  const resInput = document.getElementById("resInput") as HTMLInputElement;
-  const ratioInput = document.getElementById("ratioInput") as HTMLInputElement;
-  const resList = document.getElementById("resList") as HTMLElement;
-  const ratioList = document.getElementById("ratioList") as HTMLElement;
+  const resolutionSelect = document.getElementById("resolutionSelect") as HTMLSelectElement;
+  const formatSelect = document.getElementById("formatSelect") as HTMLSelectElement;
   const previewFrame = document.getElementById("previewFrame") as HTMLElement;
-  const piName = document.getElementById("piName");
-  const piDims = document.getElementById("piDims");
-  const piRatio = document.getElementById("piRatio");
-  const resultsList = document.getElementById("resultsList") as HTMLElement;
+  const piName = document.getElementById("piName") as HTMLElement;
+  const piDims = document.getElementById("piDims") as HTMLElement;
+  const piRatio = document.getElementById("piRatio") as HTMLElement;
+  const customWidth = document.getElementById("customWidth") as HTMLInputElement;
+  const customHeight = document.getElementById("customHeight") as HTMLInputElement;
+  const customRatio = document.getElementById("customRatio") as HTMLInputElement;
+  const loudnessTarget = document.getElementById("loudnessTarget") as HTMLSelectElement;
+  const currentLufs = document.getElementById("currentLufs") as HTMLInputElement;
+  const truePeak = document.getElementById("truePeak") as HTMLInputElement;
+  const targetValue = document.getElementById("targetValue") as HTMLElement;
+  const gainAdjustment = document.getElementById("gainAdjustment") as HTMLElement;
+  const peakLimit = document.getElementById("peakLimit") as HTMLElement;
+  const clientInput = document.getElementById("clientInput") as HTMLInputElement;
+  const projectInput = document.getElementById("projectInput") as HTMLInputElement;
+  const dateInput = document.getElementById("dateInput") as HTMLInputElement;
+  const projectSlug = document.getElementById("projectSlug") as HTMLElement;
+  const folderStructure = document.getElementById("folderStructure") as HTMLElement;
 
-  function gcd(a: number, b: number): number { return b === 0 ? a : gcd(b, a % b); }
-  function rat(w: number, h: number): string {
-    const d = gcd(w, h), rw = w/d, rh = h/d;
-    return (rw <= 32 && rh <= 32) ? `${rw}:${rh}` : (w/h).toFixed(3) + ":1";
+  const MAX_W = 560;
+  const MAX_H = 280;
+
+  function gcd(a: number, b: number): number {
+    return b === 0 ? a : gcd(b, a % b);
   }
 
-  function updateDynamic() {
-    // 1. Exact Match Check (Precision Snap)
-    const exact = DB.find(i => i.cat.toUpperCase() === resVal.toUpperCase() && (i.ratio === ratioVal || i.name.includes(ratioVal)));
-    if (exact) {
-      selected_item = exact;
-      renderList();
-      showPreview(exact.w, exact.h, exact.name);
+  function ratioText(width: number, height: number) {
+    const divisor = gcd(width, height);
+    const rw = width / divisor;
+    const rh = height / divisor;
+    return rw <= 32 && rh <= 32 ? `${rw}:${rh}` : (width / height).toFixed(2);
+  }
+
+  function showPreview(width: number, height: number, label: string) {
+    const ratio = width / height;
+    let frameWidth;
+    let frameHeight;
+
+    if (ratio > MAX_W / MAX_H) {
+      frameWidth = MAX_W;
+      frameHeight = Math.round(MAX_W / ratio);
+    } else {
+      frameHeight = MAX_H;
+      frameWidth = Math.round(MAX_H * ratio);
+    }
+
+    previewFrame.style.width = `${frameWidth}px`;
+    previewFrame.style.height = `${frameHeight}px`;
+    piName.textContent = label;
+    piDims.textContent = `${width.toLocaleString()} × ${height.toLocaleString()}`;
+    piRatio.textContent = ratioText(width, height);
+  }
+
+  function updatePresetPreview() {
+    const resolution = RESOLUTIONS.find((item) => item.id === resolutionSelect.value) ?? RESOLUTIONS[0];
+    const format = FORMATS.find((item) => item.id === formatSelect.value) ?? FORMATS[0];
+
+    const width = resolution.width;
+    const height = Math.round(width / format.ratio);
+    showPreview(width, height, `${resolution.label} · ${format.label}`);
+  }
+
+  function updateCustomPreview() {
+    const width = Number(customWidth.value);
+    const height = Number(customHeight.value);
+
+    if (!width || !height) {
+      customRatio.value = "";
       return;
     }
 
-    // 2. Fallback to calculation
-    const h = RES_MAP[resVal.toUpperCase()] || parseInt(resVal);
-    let cleanRatio = ratioVal.split(" ")[0];
-    const r = RATIO_MAP[cleanRatio] || parseFloat(cleanRatio);
-
-    if (h > 0 && r > 0) {
-      const w = Math.round(h * r);
-      selected_item = null;
-      renderList();
-      showPreview(w, h, `${resVal.toUpperCase() || "Dynamic"} ${ratioVal || ""}`.trim());
-    } else {
-      renderList();
-    }
+    customRatio.value = ratioText(width, height);
+    showPreview(width, height, "Personalizado");
   }
 
-  function setupDropdown(input: HTMLInputElement, list: HTMLElement, options: string[]) {
-    const show = () => {
-      list.innerHTML = "";
-      options.forEach(opt => {
-        const div = document.createElement("div");
-        div.className = "dropdown-item";
-        div.textContent = opt;
-        div.onmousedown = (e) => {
-          e.preventDefault();
-          input.value = opt;
-          if (input.id === "resInput") resVal = opt;
-          if (input.id === "ratioInput") ratioVal = opt;
-          input.dispatchEvent(new Event("input"));
-          list.classList.remove("on");
-          updateDynamic();
-        };
-        list.appendChild(div);
-      });
-      list.classList.add("on");
-    };
+  function updateLoudness() {
+    const target = LOUDNESS_TARGETS.find((item) => item.id === loudnessTarget.value) ?? LOUDNESS_TARGETS[0];
+    const current = Number(currentLufs.value || 0);
+    const peak = Number(truePeak.value || 0);
+    const adjustment = target.lufs - current;
+    const predictedPeak = peak + adjustment;
 
-    input.onfocus = show;
-    input.onclick = show;
-    input.onblur = () => setTimeout(() => list.classList.remove("on"), 150);
-    
-    input.oninput = () => {
-      const val = input.value.toLowerCase();
-      if (!list.classList.contains("on")) list.classList.add("on");
-      Array.from(list.children).forEach(child => {
-        const match = child.textContent?.toLowerCase().includes(val);
-        (child as HTMLElement).style.display = match ? "block" : "none";
-      });
-    };
+    targetValue.textContent = `${target.lufs.toFixed(0)} LUFS`;
+    gainAdjustment.textContent = `${adjustment > 0 ? "+" : ""}${adjustment.toFixed(1)} dB`;
+    peakLimit.textContent = `${target.peak.toFixed(0)} dBTP${predictedPeak > target.peak ? " · cuidado con clipping" : ""}`;
   }
 
-  function pick(item: ResolutionItem) {
-    selected_item = item;
-    resInput.value = item.cat;
-    ratioInput.value = item.name;
-    resVal = item.cat;
-    ratioVal = item.name;
-    renderList();
-    showPreview(item.w, item.h, item.name);
-    if (collapsedGroups.has(item.cat)) {
-      collapsedGroups.delete(item.cat);
-      renderList();
-    }
+  function slugify(value: string) {
+    return value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
   }
 
-  const MAX_W = 560; const MAX_H = 280;
+  function updateProjectStructure() {
+    const client = clientInput.value.trim() || "cliente";
+    const project = projectInput.value.trim() || "proyecto";
+    const date = dateInput.value || new Date().toISOString().slice(0, 10);
+    const projectName = `${date}_${slugify(client)}_${slugify(project)}`;
 
-  function showPreview(w: number, h: number, name: string) {
-    const ratio = w / h;
-    let fw, fh;
-    if (ratio > (MAX_W/MAX_H)) { fw = MAX_W; fh = Math.round(MAX_W/ratio); }
-    else { fh = MAX_H; fw = Math.round(MAX_H*ratio); }
-    if (previewFrame) { previewFrame.style.width = fw + "px"; previewFrame.style.height = fh + "px"; }
-    if (piName) piName.textContent = name;
-    if (piDims) piDims.textContent = `${w.toLocaleString()} × ${h.toLocaleString()}`;
-    if (piRatio) piRatio.textContent = rat(w, h);
+    projectSlug.textContent = projectName;
+    folderStructure.textContent = `${projectName}
+├── 00_admin
+├── 01_brief
+├── 02_media
+│   ├── camera
+│   ├── audio
+│   ├── gfx
+│   └── music
+├── 03_project
+│   ├── davinci
+│   └── fcpx
+├── 04_exports
+│   ├── review
+│   ├── master
+│   └── socials
+└── 05_archive`;
   }
 
-  function renderList() {
-    if (!resultsList) return;
-    resultsList.innerHTML = "";
-    const filtered = DB.filter(i => {
-       const mR = !resVal || i.res.toLowerCase().includes(resVal.toLowerCase()) || i.cat.toLowerCase().includes(resVal.toLowerCase());
-       const mT = !ratioVal || i.ratio.toLowerCase().includes(ratioVal.toLowerCase()) || i.name.toLowerCase().includes(ratioVal.toLowerCase());
-       return mR && mT;
+  document.addEventListener("DOMContentLoaded", () => {
+    RESOLUTIONS.forEach((resolution) => {
+      const option = document.createElement("option");
+      option.value = resolution.id;
+      option.textContent = resolution.label;
+      resolutionSelect.appendChild(option);
     });
-    const groupsMap: Record<string, ResolutionItem[]> = {};
-    filtered.forEach(i => { (groupsMap[i.cat] = groupsMap[i.cat] || []).push(i); });
-    CAT_ORDER.forEach(cat => {
-      if (!groupsMap[cat]) return;
-      const isCollapsed = collapsedGroups.has(cat) && !resVal && !ratioVal;
-      const gLabel = document.createElement("div"); gLabel.className = "group-label"; gLabel.innerHTML = `<span>${cat}</span> <span>▾</span>`;
-      gLabel.onclick = () => { if (collapsedGroups.has(cat)) collapsedGroups.delete(cat); else collapsedGroups.add(cat); renderList(); };
-      const gRows = document.createElement("div"); gRows.style.display = isCollapsed ? "none" : "block";
-      groupsMap[cat].forEach(item => {
-        const row = document.createElement("div"); row.className = "row" + (selected_item?.name === item.name && selected_item?.cat === item.cat ? " sel" : "");
-        row.innerHTML = `<div class="r-name">${item.name}</div><div class="r-dims">${item.w}×${item.h}</div><div class="r-ratio">${rat(item.w,item.h)}</div>`;
-        row.onclick = () => pick(item); gRows.appendChild(row);
-      });
-      resultsList.appendChild(gLabel); resultsList.appendChild(gRows);
+
+    FORMATS.forEach((format) => {
+      const option = document.createElement("option");
+      option.value = format.id;
+      option.textContent = format.label;
+      formatSelect.appendChild(option);
     });
-  }
 
-  resInput.oninput = (e) => { resVal = (e.target as HTMLInputElement).value; updateDynamic(); };
-  ratioInput.oninput = (e) => { ratioVal = (e.target as HTMLInputElement).value; updateDynamic(); };
+    LOUDNESS_TARGETS.forEach((target) => {
+      const option = document.createElement("option");
+      option.value = target.id;
+      option.textContent = target.label;
+      loudnessTarget.appendChild(option);
+    });
 
-  document.addEventListener('DOMContentLoaded', () => {
-    setupDropdown(resInput, resList, RES_OPTS);
-    setupDropdown(ratioInput, ratioList, RATIO_OPTS);
-    pick(DB.find(i => i.cat === "1080p" && i.ratio === "16:9") || DB[0]);
+    resolutionSelect.value = "4k";
+    formatSelect.value = "16x9";
+    loudnessTarget.value = "youtube";
+    currentLufs.value = "-18";
+    truePeak.value = "-2";
+    dateInput.value = new Date().toISOString().slice(0, 10);
+
+    resolutionSelect.addEventListener("change", updatePresetPreview);
+    formatSelect.addEventListener("change", updatePresetPreview);
+    customWidth.addEventListener("input", updateCustomPreview);
+    customHeight.addEventListener("input", updateCustomPreview);
+    loudnessTarget.addEventListener("change", updateLoudness);
+    currentLufs.addEventListener("input", updateLoudness);
+    truePeak.addEventListener("input", updateLoudness);
+    clientInput.addEventListener("input", updateProjectStructure);
+    projectInput.addEventListener("input", updateProjectStructure);
+    dateInput.addEventListener("input", updateProjectStructure);
+
+    updatePresetPreview();
+    updateLoudness();
+    updateProjectStructure();
   });
 </script>

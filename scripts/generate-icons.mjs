@@ -6,17 +6,26 @@ const INPUT_DIR = "./public/icons";
 const OUTPUT_FILE = "./src/generated/icons.ts";
 
 const GRID_SIZE = 32;
+const SAMPLE_SCALE = 8;
+const SAMPLE_SIZE = GRID_SIZE * SAMPLE_SCALE;
+const CELL_COVERAGE_THRESHOLD = 0.34;
+
+function isForegroundPixel(r, g, b, a) {
+    if (a < 128) return false;
+    if (r > 240 && g > 240 && b > 240) return false;
+    return true;
+}
 
 // Convert image → matrix
 async function imageToMatrix(filePath) {
     const img = await loadImage(filePath);
 
-    const canvas = createCanvas(GRID_SIZE, GRID_SIZE);
+    const canvas = createCanvas(SAMPLE_SIZE, SAMPLE_SIZE);
     const ctx = canvas.getContext("2d");
 
     // Calculate scaling to preserve aspect ratio and add a 2px padding
-    const padding = 2;
-    const targetSize = GRID_SIZE - (padding * 2);
+    const padding = 2 * SAMPLE_SCALE;
+    const targetSize = SAMPLE_SIZE - (padding * 2);
     const scale = targetSize / Math.max(img.width, img.height);
 
     const scaledWidth = img.width * scale;
@@ -32,7 +41,7 @@ async function imageToMatrix(filePath) {
     // Draw + downscale
     ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
 
-    const { data } = ctx.getImageData(0, 0, GRID_SIZE, GRID_SIZE);
+    const { data } = ctx.getImageData(0, 0, SAMPLE_SIZE, SAMPLE_SIZE);
 
     const matrix = [];
 
@@ -40,23 +49,27 @@ async function imageToMatrix(filePath) {
         const row = [];
 
         for (let x = 0; x < GRID_SIZE; x++) {
-            const i = (y * GRID_SIZE + x) * 4;
+            let filledPixels = 0;
 
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            const a = data[i + 3];
+            for (let sy = 0; sy < SAMPLE_SCALE; sy++) {
+                for (let sx = 0; sx < SAMPLE_SCALE; sx++) {
+                    const sampleX = x * SAMPLE_SCALE + sx;
+                    const sampleY = y * SAMPLE_SCALE + sy;
+                    const i = (sampleY * SAMPLE_SIZE + sampleX) * 4;
 
-            // For full color PNGs and SVG line-art the best mask is the alpha channel
-            // or rejecting completely white background pixels.
-            if (a < 128) {
-                row.push(0);
-            } else if (r > 240 && g > 240 && b > 240) {
-                // Ignore very bright/white pixels (helps with solid white backgrounds if any)
-                row.push(0);
-            } else {
-                row.push(1);
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    const a = data[i + 3];
+
+                    if (isForegroundPixel(r, g, b, a)) {
+                        filledPixels += 1;
+                    }
+                }
             }
+
+            const coverage = filledPixels / (SAMPLE_SCALE * SAMPLE_SCALE);
+            row.push(coverage >= CELL_COVERAGE_THRESHOLD ? 1 : 0);
         }
 
         matrix.push(row);

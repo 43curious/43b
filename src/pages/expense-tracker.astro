@@ -1,0 +1,41 @@
+---
+import Main from "../layouts/Main.astro";
+import Transactions from "../components/Transactions.astro";
+import PrefetchLink from "../components/PrefetchLink.astro";
+import { transactionSpecs } from "../data/transactions.data";
+
+const title = "Expense Tracker";
+const description = "A dynamic expense tracker demonstrating the snappy 'Lawn' architecture.";
+---
+
+<Main {title} {description}>
+  <div class="max-w-2xl mx-auto py-12 px-4">
+    <div class="flex justify-between items-end mb-8">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-2">My Expenses</h1>
+        <p class="text-gray-600">Dynamic data with hover-prefetching.</p>
+      </div>
+      
+      <PrefetchLink 
+        href="/" 
+        className="text-sm text-blue-600 hover:underline"
+      >
+        ← Back to Home
+      </PrefetchLink>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <Transactions />
+    </div>
+
+    <div class="mt-12 p-6 bg-slate-50 rounded-lg border border-slate-200">
+      <h2 class="text-lg font-semibold mb-3">How it works</h2>
+      <ul class="text-sm text-slate-600 space-y-2">
+        <li><strong>Built-in Prefetch:</strong> Astro's <code>data-astro-prefetch</code> handles document loading.</li>
+        <li><strong>Shared Query Client:</strong> A singleton store in <code>src/lib/cache.ts</code> holds the data.</li>
+        <li><strong>Prewarm Pattern:</strong> <code>PrefetchLink</code> triggers an API call on hover through <code>transactions.data.ts</code> specs.</li>
+        <li><strong>Optimistic UI:</strong> The <code>Transactions</code> component renders immediately if data is in the cache.</li>
+      </ul>
+    </div>
+  </div>
+</Main>

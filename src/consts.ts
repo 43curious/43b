@@ -1,5 +1,8 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
+export const SITE_TITLE = "Jon Castro";
+export const SITE_DESCRIPTION =
+  "Un archivo personal de guias tecnicas, herramientas y experimentos sobre trabajo audiovisual, informatica y flujos de trabajo.";
 
-export const SITE_TITLE = 'castro';
-export const SITE_DESCRIPTION = 'Un blog sobre guías audiovisuales, informática y experimentos. Explorando nuevas tecnologías y flujos de trabajo. Interando constantemente.';
+export const NAV_LINKS = [
+  { href: "/", label: "Inicio" },
+  { href: "/tools", label: "Herramientas" },
+] as const;

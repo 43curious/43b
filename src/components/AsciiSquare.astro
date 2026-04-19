@@ -81,8 +81,8 @@ const {
     transition:
       color 0.15s ease,
       filter 2s ease-in-out;
-    font-weight: 900;
-    transform: scale(1.3);
+    font-weight: 800;
+    transform: scale(1.22);
   }
 
   @keyframes idleBreath {
@@ -106,16 +106,16 @@ const {
   import { ICONS } from "../generated/icons";
 
   const SHAPES = {
-    faq: { icon: "faq", color: "hsl(45, 100%, 45%)" },
-    musica: { icon: "musica", color: "hsl(280, 100%, 55%)" },
-    utilidades: { icon: "utilidades", color: "hsl(210, 100%, 50%)" },
-    color: { icon: "DaVinci_Resolve_Studio", color: "hsl(220, 90%, 55%)" },
-    organizar: { icon: "organizar", color: "hsl(140, 100%, 40%)" },
-    organizart: { icon: "organizar", color: "hsl(140, 100%, 40%)" },
-    fcpx: { icon: "fcpx", color: "hsl(310, 100%, 60%)" },
-    recursos: { icon: "recursos", color: "hsl(180, 100%, 40%)" },
-    computer: { icon: "computer", color: "hsl(25, 100%, 55%)" },
-    astro: { icon: "astro", color: "hsl(330, 100%, 55%)" },
+    faq: { icon: "faq", color: "hsl(45, 88%, 42%)" },
+    musica: { icon: "musica", color: "hsl(286, 74%, 44%)" },
+    utilidades: { icon: "utilidades", color: "hsl(208, 78%, 42%)" },
+    color: { icon: "DaVinci_Resolve_Studio", color: "hsl(212, 72%, 44%)" },
+    organizar: { icon: "organizar", color: "hsl(145, 72%, 36%)" },
+    organizart: { icon: "organizar", color: "hsl(145, 72%, 36%)" },
+    fcpx: { icon: "fcpx", color: "hsl(318, 82%, 48%)" },
+    recursos: { icon: "recursos", color: "hsl(184, 74%, 36%)" },
+    computer: { icon: "computer", color: "hsl(24, 82%, 44%)" },
+    astro: { icon: "astro", color: "hsl(336, 76%, 46%)" },
   };
 
   const TITLE_MAP = {
@@ -135,6 +135,18 @@ const {
     blog: "astro",
   };
 
+  type IconSourceCell = 0 | 1 | readonly [number, number];
+  type RenderCell = { density: number; color: number };
+
+  const DENSITY_CHARS = [
+    { min: 224, char: "▓" },
+    { min: 192, char: "▓" },
+    { min: 160, char: "▓" },
+    { min: 128, char: "▒" },
+    { min: 96, char: "▒" },
+    { min: 64, char: "░" },
+    { min: 1, char: "░" },
+  ];
   const CHARS = ["░", "▒", "▓"];
   const TRAIL_COLORS = [
     "hsl(210,100%,60%)",
@@ -157,31 +169,166 @@ const {
 
   const matrixCache = new Map();
 
-  function matrixToSet(
-    matrix: readonly (readonly number[])[],
-    gridSize: number,
-  ) {
-    const set = new Set();
-    const height = matrix.length;
-    const width = matrix[0].length;
-    for (let y = 0; y < gridSize; y++) {
-      for (let x = 0; x < gridSize; x++) {
-        const mx = Math.floor((x / gridSize) * width);
-        const my = Math.floor((y / gridSize) * height);
-        if (matrix[my]?.[mx]) set.add(y * gridSize + x);
+  function unpackColor(color: number) {
+    return {
+      r: (color >> 16) & 255,
+      g: (color >> 8) & 255,
+      b: color & 255,
+    };
+  }
+
+  function densityToChar(density: number) {
+    for (const step of DENSITY_CHARS) {
+      if (density >= step.min) return step.char;
+    }
+    return "░";
+  }
+
+  function rgbToHsl(r: number, g: number, b: number) {
+    const nr = r / 255;
+    const ng = g / 255;
+    const nb = b / 255;
+    const max = Math.max(nr, ng, nb);
+    const min = Math.min(nr, ng, nb);
+    const delta = max - min;
+
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
+
+    if (delta !== 0) {
+      s = delta / (1 - Math.abs(2 * l - 1));
+
+      switch (max) {
+        case nr:
+          h = ((ng - nb) / delta) % 6;
+          break;
+        case ng:
+          h = (nb - nr) / delta + 2;
+          break;
+        default:
+          h = (nr - ng) / delta + 4;
       }
     }
-    return set;
+
+    return {
+      h: Math.round(((h * 60) + 360) % 360),
+      s,
+      l,
+    };
+  }
+
+  function colorToCss(color: number, density: number) {
+    const { r, g, b } = unpackColor(color);
+    const { h, s } = rgbToHsl(r, g, b);
+    const quantizedHue = Math.round(h / 10) * 10;
+    const quantizedLightness = Math.round((22 + (density / 255) * 24) / 4) * 4;
+    const quantizedSaturation = Math.round((42 + s * 44) / 4) * 4;
+
+    return `hsl(${quantizedHue}, ${quantizedSaturation}%, ${quantizedLightness}%)`;
+  }
+
+  function matrixToRenderMap(
+    matrix: readonly (readonly IconSourceCell[])[],
+    gridSize: number,
+    fallbackColor: number,
+  ) {
+    const map = new Map<number, RenderCell>();
+    const height = matrix.length;
+    const width = matrix[0]?.length ?? 0;
+
+    for (let y = 0; y < gridSize; y++) {
+      const startY = Math.floor((y / gridSize) * height);
+      const endY = Math.max(startY + 1, Math.ceil(((y + 1) / gridSize) * height));
+
+      for (let x = 0; x < gridSize; x++) {
+        const startX = Math.floor((x / gridSize) * width);
+        const endX = Math.max(startX + 1, Math.ceil(((x + 1) / gridSize) * width));
+
+        let totalDensity = 0;
+        let weightedR = 0;
+        let weightedG = 0;
+        let weightedB = 0;
+        let samples = 0;
+
+        for (let my = startY; my < endY; my++) {
+          for (let mx = startX; mx < endX; mx++) {
+            const cell = matrix[my]?.[mx];
+            if (!cell) {
+              samples += 1;
+              continue;
+            }
+
+            const density = Array.isArray(cell) ? cell[0] : 255;
+            const color = Array.isArray(cell) ? cell[1] : fallbackColor;
+            const { r, g, b } = unpackColor(color);
+            totalDensity += density;
+            weightedR += r * density;
+            weightedG += g * density;
+            weightedB += b * density;
+            samples += 1;
+          }
+        }
+
+        const normalizedDensity = samples > 0 ? Math.round(totalDensity / samples) : 0;
+        if (normalizedDensity <= 8 || totalDensity === 0) continue;
+
+        const avgColor =
+          (Math.round(weightedR / totalDensity) << 16) |
+          (Math.round(weightedG / totalDensity) << 8) |
+          Math.round(weightedB / totalDensity);
+
+        map.set(y * gridSize + x, { density: normalizedDensity, color: avgColor });
+      }
+    }
+
+    return map;
   }
 
   function getIconSet(name: string, gridSize: number) {
     const key = `${name}:${gridSize}`;
     if (matrixCache.has(key)) return matrixCache.get(key);
     const matrix = ICONS[name as keyof typeof ICONS];
-    if (!matrix) return new Set();
-    const set = matrixToSet(matrix, gridSize);
+    if (!matrix) return new Map();
+    const shape = Object.values(SHAPES).find((entry) => entry.icon === name);
+    const fallbackColor = shape?.color
+      ? hslStringToPackedColor(shape.color)
+      : 0x666666;
+    const set = matrixToRenderMap(matrix, gridSize, fallbackColor);
     matrixCache.set(key, set);
     return set;
+  }
+
+  function hslStringToPackedColor(hsl: string) {
+    const match = hsl.match(/hsl\((\d+),\s*([\d.]+)%?,\s*([\d.]+)%?\)/i);
+    if (!match) return 0x666666;
+
+    const h = Number(match[1]) / 360;
+    const s = Number(match[2]) / 100;
+    const l = Number(match[3]) / 100;
+
+    const hueToRgb = (p: number, q: number, t: number) => {
+      let tt = t;
+      if (tt < 0) tt += 1;
+      if (tt > 1) tt -= 1;
+      if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+      if (tt < 1 / 2) return q;
+      if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+      return p;
+    };
+
+    if (s === 0) {
+      const gray = Math.round(l * 255);
+      return (gray << 16) | (gray << 8) | gray;
+    }
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    const r = Math.round(hueToRgb(p, q, h + 1 / 3) * 255);
+    const g = Math.round(hueToRgb(p, q, h) * 255);
+    const b = Math.round(hueToRgb(p, q, h - 1 / 3) * 255);
+
+    return (r << 16) | (g << 8) | b;
   }
 
   function getGridSize(isHeader: boolean) {
@@ -267,9 +414,8 @@ const {
     if (!shape) return;
 
     const active = getIconSet(shape.icon, gridSize);
-    const [, h] = shape.color.match(/hsl\((\d+)/) ?? [];
-
-    active.forEach((idx: number) => {
+    active.forEach((renderCell: RenderCell, idx: number) => {
+      const { density, color } = renderCell;
       const cell = cells[idx];
       if (!cell) return;
       cell.classList.add("shape");
@@ -278,9 +424,9 @@ const {
         // Stagger the animation so they 'twinkle'
         cell.style.animationDelay = `${Math.random() * 2}s`;
       }
-      cell.textContent = "▓";
-      const l = 35 + Math.random() * 20;
-      cell.style.color = `hsl(${h}, 90%, ${Math.round(l)}%)`;
+      cell.textContent = densityToChar(density);
+      cell.style.color = colorToCss(color, density);
+      cell.style.opacity = `${Math.min(1, Math.max(0.94, density / 255))}`;
     });
   }
 
@@ -290,6 +436,7 @@ const {
       htmlCell.classList.remove("shape", "idle");
       htmlCell.textContent = randomChar();
       htmlCell.style.color = "";
+      htmlCell.style.opacity = "";
       htmlCell.style.animationDelay = "";
     });
   }

@@ -16,5 +16,6 @@ export default defineConfig({
     locales: ["es", "en", "eu"],
   },
   output: "static",
+  prefetch: true,
 });
 

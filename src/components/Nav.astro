@@ -1,15 +1,40 @@
 ---
 import "../styles/global.css";
+import { NAV_LINKS } from "../consts";
 
 const currentPath = Astro.url.pathname;
+const [homeLink, ...secondaryLinks] = NAV_LINKS;
 ---
 
 <nav id="navbar">
   <div class="container-fluid nav-content">
-    <a href="/" class={currentPath === "/" ? "active" : ""}>Blog</a>
-    <div style="display: flex; gap: 32px; align-items: center;">
-      <a href="/tools" class={currentPath === "/tools" ? "active" : ""}>Tools</a>
-      <a href="/about" class={currentPath === "/about" ? "active" : ""}>About</a>
+    <a href={homeLink.href} class={currentPath === homeLink.href ? "active" : ""}>
+      {homeLink.label}
+    </a>
+
+    <div class="nav-secondary">
+      {
+        secondaryLinks.map(({ href, label }) => (
+          <a href={href} class={currentPath === href ? "active" : ""}>
+            {label}
+          </a>
+        ))
+      }
     </div>
   </div>
 </nav>
+
+<style>
+  .nav-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  @media (max-width: 640px) {
+    .nav-secondary {
+      gap: 20px;
+    }
+  }
+</style>
