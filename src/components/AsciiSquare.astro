@@ -4,7 +4,6 @@ interface Props {
   title?: string;
   class?: string;
   transitionName?: string;
-  transitionAnimate?: "slide" | "fade" | "none" | "initial";
 }
 
 const {
@@ -12,7 +11,6 @@ const {
   title = "",
   class: className = "",
   transitionName,
-  transitionAnimate,
 } = Astro.props;
 ---
 
@@ -21,7 +19,6 @@ const {
   data-interactive={interactive.toString()}
   data-title={title}
   transition:name={transitionName}
-  transition:animate={transitionAnimate}
 >
   <div class="ascii-square" aria-label="Interactive ASCII Grid"></div>
 </div>
@@ -29,7 +26,6 @@ const {
 <style>
   .ascii-square-wrapper {
     width: 100%;
-    /* Default max limits kept from original layout implicitly if not overridden */
   }
 
   .ascii-square {
@@ -37,52 +33,34 @@ const {
     gap: 1px;
     width: 100%;
     aspect-ratio: 1;
-    user-select: none;
-    font-family: "Martian Mono", monospace;
-    font-size: 8px; /* default, overridden via inline style/classes if sizing very small */
-    line-height: 1;
     padding: 12px;
-    background: #fafafa;
     border: 1px solid var(--line);
-    flex-shrink: 0;
+    background: var(--surface);
+    color: #e0e0e0;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    line-height: 1;
+    user-select: none;
   }
 
-  /* Specific style when instantiated as a small 48x48 icon */
-  :global(.header-square .ascii-square) {
-    padding: 3px;
-    font-size: 0px; /* Hide text if grid is too small, or rely on borders */
-    gap: 0px;
-    border: none;
-    background: transparent;
-  }
-  
-  /* Use explicit cell styles when inside small header */
-  :global(.header-square .cell) {
-    font-size: 3px; /* make chars tiny but visible */
-  }
-  :global(.header-square .cell.shape) {
-      transform: scale(1.1); /* less drastic scaling on small screens */
-  }
-
-  :global(.cell) {
+  :global(.ascii-square .cell) {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #e0e0e0;
     transition: color 0.6s ease;
     cursor: default;
   }
 
-  :global(.cell.trail) {
+  :global(.ascii-square .cell.trail) {
     transition: color 0s;
   }
 
-  :global(.cell.shape) {
+  :global(.ascii-square .cell.shape) {
+    font-weight: 900;
+    transform: scale(1.3);
     transition:
       color 0.15s ease,
-      filter 2s ease-in-out;
-    font-weight: 800;
-    transform: scale(1.22);
+      filter 1.8s ease-in-out;
   }
 
   @keyframes idleBreath {
@@ -90,38 +68,38 @@ const {
       filter: brightness(1) saturate(1);
     }
     50% {
-      filter: brightness(1.5) saturate(1.3);
+      filter: brightness(1.45) saturate(1.25);
     }
     100% {
       filter: brightness(1) saturate(1);
     }
   }
 
-  :global(.cell.shape.idle) {
+  :global(.ascii-square .cell.shape.idle) {
     animation: idleBreath 3s infinite alternate;
   }
 </style>
 
 <script>
-  import { ICONS } from "../generated/icons";
-
   const SHAPES = {
-    faq: { icon: "faq", color: "hsl(45, 88%, 42%)" },
-    musica: { icon: "musica", color: "hsl(286, 74%, 44%)" },
-    utilidades: { icon: "utilidades", color: "hsl(208, 78%, 42%)" },
-    color: { icon: "DaVinci_Resolve_Studio", color: "hsl(212, 72%, 44%)" },
-    organizar: { icon: "organizar", color: "hsl(145, 72%, 36%)" },
-    organizart: { icon: "organizar", color: "hsl(145, 72%, 36%)" },
-    fcpx: { icon: "fcpx", color: "hsl(318, 82%, 48%)" },
-    recursos: { icon: "recursos", color: "hsl(184, 74%, 36%)" },
-    computer: { icon: "computer", color: "hsl(24, 82%, 44%)" },
-    astro: { icon: "astro", color: "hsl(336, 76%, 46%)" },
+    faq: { icon: "/icons/faq.png", color: "hsl(45, 100%, 45%)" },
+    musica: { icon: "/icons/musica.svg", color: "hsl(280, 100%, 55%)" },
+    utilidades: { icon: "/icons/utilidades.svg", color: "hsl(210, 100%, 50%)" },
+    color: { icon: "/icons/DaVinci_Resolve_Studio.png", color: "hsl(220, 90%, 55%)" },
+    organizar: { icon: "/icons/organizar.svg", color: "hsl(140, 100%, 40%)" },
+    fcpx: { icon: "/icons/fcpx.png", color: "hsl(310, 100%, 60%)" },
+    recursos: { icon: "/icons/recursos.svg", color: "hsl(180, 100%, 40%)" },
+    computer: { icon: "/icons/computer.svg", color: "hsl(25, 100%, 55%)" },
+    astro: { icon: "/icons/astro.svg", color: "hsl(330, 100%, 55%)" },
   };
+  type ShapeKey = keyof typeof SHAPES;
+  type GridCell = HTMLDivElement;
+  type RenderState = { current: number; token: number };
 
   const TITLE_MAP = {
     faq: "faq",
-    música: "musica",
     musica: "musica",
+    "música": "musica",
     utilidades: "utilidades",
     color: "color",
     "gestion de color": "color",
@@ -135,18 +113,6 @@ const {
     blog: "astro",
   };
 
-  type IconSourceCell = 0 | 1 | readonly [number, number];
-  type RenderCell = { density: number; color: number };
-
-  const DENSITY_CHARS = [
-    { min: 224, char: "▓" },
-    { min: 192, char: "▓" },
-    { min: 160, char: "▓" },
-    { min: 128, char: "▒" },
-    { min: 96, char: "▒" },
-    { min: 64, char: "░" },
-    { min: 1, char: "░" },
-  ];
   const CHARS = ["░", "▒", "▓"];
   const TRAIL_COLORS = [
     "hsl(210,100%,60%)",
@@ -158,304 +124,203 @@ const {
     "hsl(330,100%,60%)",
     "hsl(45,100%,50%)",
   ];
+  const iconCache = new Map<string, Promise<Set<number>>>();
 
-  function titleToShape(title: string) {
+  function titleToShape(title: string): ShapeKey | null {
     const lower = title.toLowerCase();
-    for (const [keyword, shape] of Object.entries(TITLE_MAP)) {
+    for (const [keyword, shape] of Object.entries(TITLE_MAP) as [string, ShapeKey][]) {
       if (lower.includes(keyword)) return shape;
     }
     return null;
-  }
-
-  const matrixCache = new Map();
-
-  function unpackColor(color: number) {
-    return {
-      r: (color >> 16) & 255,
-      g: (color >> 8) & 255,
-      b: color & 255,
-    };
-  }
-
-  function densityToChar(density: number) {
-    for (const step of DENSITY_CHARS) {
-      if (density >= step.min) return step.char;
-    }
-    return "░";
-  }
-
-  function rgbToHsl(r: number, g: number, b: number) {
-    const nr = r / 255;
-    const ng = g / 255;
-    const nb = b / 255;
-    const max = Math.max(nr, ng, nb);
-    const min = Math.min(nr, ng, nb);
-    const delta = max - min;
-
-    let h = 0;
-    let s = 0;
-    const l = (max + min) / 2;
-
-    if (delta !== 0) {
-      s = delta / (1 - Math.abs(2 * l - 1));
-
-      switch (max) {
-        case nr:
-          h = ((ng - nb) / delta) % 6;
-          break;
-        case ng:
-          h = (nb - nr) / delta + 2;
-          break;
-        default:
-          h = (nr - ng) / delta + 4;
-      }
-    }
-
-    return {
-      h: Math.round(((h * 60) + 360) % 360),
-      s,
-      l,
-    };
-  }
-
-  function colorToCss(color: number, density: number) {
-    const { r, g, b } = unpackColor(color);
-    const { h, s } = rgbToHsl(r, g, b);
-    const quantizedHue = Math.round(h / 10) * 10;
-    const quantizedLightness = Math.round((22 + (density / 255) * 24) / 4) * 4;
-    const quantizedSaturation = Math.round((42 + s * 44) / 4) * 4;
-
-    return `hsl(${quantizedHue}, ${quantizedSaturation}%, ${quantizedLightness}%)`;
-  }
-
-  function matrixToRenderMap(
-    matrix: readonly (readonly IconSourceCell[])[],
-    gridSize: number,
-    fallbackColor: number,
-  ) {
-    const map = new Map<number, RenderCell>();
-    const height = matrix.length;
-    const width = matrix[0]?.length ?? 0;
-
-    for (let y = 0; y < gridSize; y++) {
-      const startY = Math.floor((y / gridSize) * height);
-      const endY = Math.max(startY + 1, Math.ceil(((y + 1) / gridSize) * height));
-
-      for (let x = 0; x < gridSize; x++) {
-        const startX = Math.floor((x / gridSize) * width);
-        const endX = Math.max(startX + 1, Math.ceil(((x + 1) / gridSize) * width));
-
-        let totalDensity = 0;
-        let weightedR = 0;
-        let weightedG = 0;
-        let weightedB = 0;
-        let samples = 0;
-
-        for (let my = startY; my < endY; my++) {
-          for (let mx = startX; mx < endX; mx++) {
-            const cell = matrix[my]?.[mx];
-            if (!cell) {
-              samples += 1;
-              continue;
-            }
-
-            const density = Array.isArray(cell) ? cell[0] : 255;
-            const color = Array.isArray(cell) ? cell[1] : fallbackColor;
-            const { r, g, b } = unpackColor(color);
-            totalDensity += density;
-            weightedR += r * density;
-            weightedG += g * density;
-            weightedB += b * density;
-            samples += 1;
-          }
-        }
-
-        const normalizedDensity = samples > 0 ? Math.round(totalDensity / samples) : 0;
-        if (normalizedDensity <= 8 || totalDensity === 0) continue;
-
-        const avgColor =
-          (Math.round(weightedR / totalDensity) << 16) |
-          (Math.round(weightedG / totalDensity) << 8) |
-          Math.round(weightedB / totalDensity);
-
-        map.set(y * gridSize + x, { density: normalizedDensity, color: avgColor });
-      }
-    }
-
-    return map;
-  }
-
-  function getIconSet(name: string, gridSize: number) {
-    const key = `${name}:${gridSize}`;
-    if (matrixCache.has(key)) return matrixCache.get(key);
-    const matrix = ICONS[name as keyof typeof ICONS];
-    if (!matrix) return new Map();
-    const shape = Object.values(SHAPES).find((entry) => entry.icon === name);
-    const fallbackColor = shape?.color
-      ? hslStringToPackedColor(shape.color)
-      : 0x666666;
-    const set = matrixToRenderMap(matrix, gridSize, fallbackColor);
-    matrixCache.set(key, set);
-    return set;
-  }
-
-  function hslStringToPackedColor(hsl: string) {
-    const match = hsl.match(/hsl\((\d+),\s*([\d.]+)%?,\s*([\d.]+)%?\)/i);
-    if (!match) return 0x666666;
-
-    const h = Number(match[1]) / 360;
-    const s = Number(match[2]) / 100;
-    const l = Number(match[3]) / 100;
-
-    const hueToRgb = (p: number, q: number, t: number) => {
-      let tt = t;
-      if (tt < 0) tt += 1;
-      if (tt > 1) tt -= 1;
-      if (tt < 1 / 6) return p + (q - p) * 6 * tt;
-      if (tt < 1 / 2) return q;
-      if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
-      return p;
-    };
-
-    if (s === 0) {
-      const gray = Math.round(l * 255);
-      return (gray << 16) | (gray << 8) | gray;
-    }
-
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    const r = Math.round(hueToRgb(p, q, h + 1 / 3) * 255);
-    const g = Math.round(hueToRgb(p, q, h) * 255);
-    const b = Math.round(hueToRgb(p, q, h - 1 / 3) * 255);
-
-    return (r << 16) | (g << 8) | b;
-  }
-
-  function getGridSize(isHeader: boolean) {
-    if (isHeader) return 16;
-    return 32;
   }
 
   function randomChar() {
     return CHARS[Math.floor(Math.random() * CHARS.length)];
   }
 
-  function initSquares() {
-    const wrappers = document.querySelectorAll(".ascii-square-wrapper");
+  function rasterizeIcon(src: string, gridSize: number): Promise<Set<number>> {
+    const cacheKey = `${src}:${gridSize}`;
+    if (iconCache.has(cacheKey)) return iconCache.get(cacheKey)!;
 
-    wrappers.forEach((wrapper) => {
-      const square = wrapper.querySelector(".ascii-square") as HTMLElement;
-      if (!square) return;
+    const promise = new Promise<Set<number>>((resolve) => {
+      const img = new Image();
 
-      const isInteractive = wrapper.getAttribute("data-interactive") === "true";
-      const staticTitle = wrapper.getAttribute("data-title") || "";
-      const isHeader = wrapper.classList.contains("header-square");
+      img.onload = () => {
+        const sampleScale = 8;
+        const sampleSize = gridSize * sampleScale;
+        const padding = 2 * sampleScale;
+        const targetSize = sampleSize - padding * 2;
 
-      const gridSize = getGridSize(isHeader);
-      square.innerHTML = "";
-      square.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+        const canvas = document.createElement("canvas");
+        canvas.width = sampleSize;
+        canvas.height = sampleSize;
 
-      const cells: HTMLElement[] = [];
-      for (let i = 0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.textContent = randomChar();
-
-        if (isInteractive) {
-          cell.addEventListener("pointerover", () => {
-            if (cell.classList.contains("shape")) return;
-            cell.classList.add("trail");
-            cell.style.color =
-              TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)];
-            setTimeout(() => {
-              cell.classList.remove("trail");
-              cell.style.color = "";
-            }, 600);
-          });
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(new Set());
+          return;
         }
 
-        square.appendChild(cell);
-        cells.push(cell);
-      }
+        const scale = targetSize / Math.max(img.width, img.height);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const offsetX = padding + (targetSize - scaledWidth) / 2;
+        const offsetY = padding + (targetSize - scaledHeight) / 2;
 
-      if (isInteractive) {
-        // Clear previous event listeners by cloning rows if necessary?
-        // Actually event delegation is cleaner if multiple instances, but fine for now.
-        const articleRows = document.querySelectorAll(
-          ".article-row, .experiment-row",
-        );
-        articleRows.forEach((row) => {
-          // Careful: this runs once per init, attaching multiple listeners if re-inited.
-          const handleEnter = () => {
-            const title = row.querySelector(".title")?.textContent ?? "";
-            drawShape(cells, gridSize, titleToShape(title), false);
-          };
-          const handleLeave = () => clearShape(square);
+        ctx.clearRect(0, 0, sampleSize, sampleSize);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
 
-          row.addEventListener("mouseenter", handleEnter);
-          row.addEventListener("mouseleave", handleLeave);
-        });
-      }
+        const { data } = ctx.getImageData(0, 0, sampleSize, sampleSize);
+        const activeCells = new Set<number>();
 
-      if (!isInteractive && staticTitle) {
-        drawShape(cells, gridSize, titleToShape(staticTitle), true);
-      }
+        for (let y = 0; y < gridSize; y++) {
+          for (let x = 0; x < gridSize; x++) {
+            let filledPixels = 0;
+
+            for (let sy = 0; sy < sampleScale; sy++) {
+              for (let sx = 0; sx < sampleScale; sx++) {
+                const sampleX = x * sampleScale + sx;
+                const sampleY = y * sampleScale + sy;
+                const i = (sampleY * sampleSize + sampleX) * 4;
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const a = data[i + 3];
+
+                if (a >= 128 && !(r > 240 && g > 240 && b > 240)) {
+                  filledPixels += 1;
+                }
+              }
+            }
+
+            if (filledPixels / (sampleScale * sampleScale) >= 0.34) {
+              activeCells.add(y * gridSize + x);
+            }
+          }
+        }
+
+        resolve(activeCells);
+      };
+
+      img.onerror = () => resolve(new Set());
+      img.src = src;
+    });
+
+    iconCache.set(cacheKey, promise);
+    return promise;
+  }
+
+  function clearShape(cells: GridCell[]) {
+    cells.forEach((cell) => {
+      cell.classList.remove("shape", "idle", "trail");
+      cell.textContent = randomChar();
+      cell.style.color = "";
+      cell.style.animationDelay = "";
     });
   }
 
-  function drawShape(
-    cells: HTMLElement[],
+  async function drawShape(
+    cells: GridCell[],
     gridSize: number,
-    shapeKey: string | null,
-    isStatic: boolean,
+    shapeKey: ShapeKey | null,
+    isStatic = false,
+    tokenRef?: RenderState,
   ) {
     if (!shapeKey) return;
-    const shape = SHAPES[shapeKey as keyof typeof SHAPES];
+
+    const shape = SHAPES[shapeKey];
     if (!shape) return;
 
-    const active = getIconSet(shape.icon, gridSize);
-    active.forEach((renderCell: RenderCell, idx: number) => {
-      const { density, color } = renderCell;
+    const activeCells = await rasterizeIcon(shape.icon, gridSize);
+    if (tokenRef && tokenRef.current !== tokenRef.token) return;
+
+    const [, hue] = shape.color.match(/hsl\((\d+)/) ?? [];
+    activeCells.forEach((idx: number) => {
       const cell = cells[idx];
       if (!cell) return;
       cell.classList.add("shape");
       if (isStatic) {
         cell.classList.add("idle");
-        // Stagger the animation so they 'twinkle'
         cell.style.animationDelay = `${Math.random() * 2}s`;
       }
-      cell.textContent = densityToChar(density);
-      cell.style.color = colorToCss(color, density);
-      cell.style.opacity = `${Math.min(1, Math.max(0.94, density / 255))}`;
+      cell.textContent = "▓";
+      const lightness = 35 + Math.random() * 20;
+      cell.style.color = `hsl(${hue}, 90%, ${Math.round(lightness)}%)`;
     });
   }
 
-  function clearShape(square: HTMLElement) {
-    square.querySelectorAll(".cell.shape").forEach((cell) => {
-      const htmlCell = cell as HTMLElement;
-      htmlCell.classList.remove("shape", "idle");
-      htmlCell.textContent = randomChar();
-      htmlCell.style.color = "";
-      htmlCell.style.opacity = "";
-      htmlCell.style.animationDelay = "";
-    });
+  function initSquare(wrapper: HTMLElement) {
+    if (wrapper.dataset.ready === "true") return;
+    wrapper.dataset.ready = "true";
+
+    const square = wrapper.querySelector(".ascii-square") as HTMLElement | null;
+    if (!square) return;
+
+    const interactive = wrapper.dataset.interactive === "true";
+    const staticTitle = wrapper.dataset.title || "";
+    const gridSize = 32;
+    const cells: GridCell[] = [];
+    const renderState = { current: 0, token: 0 };
+
+    square.innerHTML = "";
+    square.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+    for (let i = 0; i < gridSize * gridSize; i++) {
+      const cell = document.createElement("div") as GridCell;
+      cell.className = "cell";
+      cell.textContent = randomChar();
+
+      if (interactive) {
+        cell.addEventListener("pointerover", () => {
+          if (cell.classList.contains("shape")) return;
+          cell.classList.add("trail");
+          cell.style.color =
+            TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)];
+          setTimeout(() => {
+            cell.classList.remove("trail");
+            if (!cell.classList.contains("shape")) cell.style.color = "";
+          }, 600);
+        });
+      }
+
+      square.appendChild(cell);
+      cells.push(cell);
+    }
+
+    const activateShape = (title: string) => {
+      renderState.current += 1;
+      renderState.token = renderState.current;
+      clearShape(cells);
+      drawShape(cells, gridSize, titleToShape(title), false, renderState);
+    };
+
+    const resetShape = () => {
+      renderState.current += 1;
+      renderState.token = renderState.current;
+      clearShape(cells);
+    };
+
+    if (interactive) {
+      const rows = document.querySelectorAll(".article-row, .experiment-row");
+      rows.forEach((row) => {
+        row.addEventListener("mouseenter", () => {
+          const title = row.querySelector(".title")?.textContent ?? "";
+          activateShape(title);
+        });
+        row.addEventListener("mouseleave", resetShape);
+      });
+
+      Object.values(SHAPES).forEach((shape) => {
+        rasterizeIcon(shape.icon, gridSize);
+      });
+    } else if (staticTitle) {
+      drawShape(cells, gridSize, titleToShape(staticTitle), true, renderState);
+    }
   }
 
-  // Use a simple guard to avoid double-binding if initGrid is called multiple times.
-  // Although matrixCache cleared indicates a full redraw needed.
-  initSquares();
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      matrixCache.clear();
-      initSquares();
-    }, 150);
-  });
-
-  document.addEventListener("astro:after-swap", () => {
-    matrixCache.clear();
-    initSquares();
-  });
+  document
+    .querySelectorAll(".ascii-square-wrapper")
+    .forEach((wrapper) => initSquare(wrapper as HTMLElement));
 </script>

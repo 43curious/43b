@@ -1,35 +1,31 @@
 ---
-import Main from "../../../layouts/Main.astro"
-import '../../../styles/global.css'
+import Main from "../../../layouts/Main.astro";
 ---
 
+<Main title="Niri buruz - Jon Castro" description="Jon Castrori buruz" lang="eu">
+  <div class="page-shell page-copy">
+    <header class="page-header">
+      <h1>Ni buruz</h1>
+      <p class="page-intro">
+        Teknologia, ikus-entzunezko lan-fluxua eta sistema erabilgarriak azaltzen ditut.
+      </p>
+    </header>
 
-<Main title="Niri buruz - Castro" description="Castrori buruz">
-	<body>
-		<div class="h-full mt-20 mb-10">
-      <h1 class="text-3xl px-2 mb-6">Ni buruz</h1>
-      <hr class="mb-8 mx-1.5">
-      <p class="px-2">Kaixo! Jon naiz.</p>
-      <p class="px-2">Teknologia, ikus-entzunezko lan-fluxua eta aurkitzen dudan gai interesgarri bakoitzaren inguruko gidak idazten ditut.
-        Azalpen laburrak, ikasten laguntzen didan informazioa eta helburu zehatzekin egindako tresnak baloratzen ditut. Espero dut gai berriak aztertzeko eta zerbait berria ikasteko aukera ematea.
-        Ez dut hitz ematen gida guztiak itzuliko ditudanik. Mila esker pasatzeagatik!</p>
-      <p class="px-2">Webgune hau hurrengo tresnekin eginda dago:
-        <ul class="px-2 list-inside list-disc mb-10">
-          <li><a target="_blank" href="https://astro.build/">Astro</a> framework bezala,</li>
-          <li><a target="_blank" href="https://www.markdownguide.org/">Markdown</a> idazteko formatu moduan,</li>
-          <li>zabalua <a target="_blank" href="https://www.netlify.com/">Netlify-en</a>,</li>
-          <li>eta <a target="_blank" href="https://github.com/kepano/flexoki">Flexoki</a> kolore paleta <a href="https://vercel.com/font">Geist</a> tipografíarekin eginda dago.</li>  
-        </ul>
-      </p>
-      <p class="px-2">Hurrengo tresnak erabiltzen ditut nire lana aurrera eramateko:
-          <ul class="px-2 list-inside list-disc mb-10">
-            <li><a target="_blank" href="https://obsidian.md/">Obsidian</a> notak idazteko,</li>
-            <li><a target="_blank" href="https://culturedcode.com/things/">Things</a> egin beharretarako,</li>
-            <li><a target="_blank" href="https://code.visualstudio.com/">Visual Studio Code</a> programatzeko</li>
-            <li>eta<a target="_blank" href="https://www.blackmagicdesign.com/es/products/davinciresolve/">DaVinci Resolve</a> bideoak editatzeko.</li>  
-          </ul>
-      </p>
-      <p>Zerbait behar duzu?</p>
-		</div>
-	</body>
+    <section class="section-list prose">
+      <h2>Webgunea</h2>
+      <ul>
+        <li><a target="_blank" href="https://astro.build/">Astro</a> framework gisa.</li>
+        <li><a target="_blank" href="https://www.markdownguide.org/">Markdown</a> eta MDX idazteko.</li>
+        <li><a target="_blank" href="https://www.netlify.com/">Netlify</a> argitaratzeko.</li>
+      </ul>
+
+      <h2>Eguneroko tresnak</h2>
+      <ul>
+        <li><a target="_blank" href="https://obsidian.md/">Obsidian</a> notetarako.</li>
+        <li><a target="_blank" href="https://culturedcode.com/things/">Things</a> egitekoetarako.</li>
+        <li><a target="_blank" href="https://code.visualstudio.com/">Visual Studio Code</a> programatzeko.</li>
+        <li><a target="_blank" href="https://www.blackmagicdesign.com/es/products/davinciresolve/">DaVinci Resolve</a> editatzeko.</li>
+      </ul>
+    </section>
+  </div>
 </Main>

@@ -1,90 +1,92 @@
 ---
+import { getCollection, type CollectionEntry } from "astro:content";
 import Main from "../layouts/Main.astro";
 import AsciiSquare from "../components/AsciiSquare.astro";
 import ContentTabs from "../components/ContentTabs.astro";
-import SiteFooter from "../components/SiteFooter.astro";
-import PrefetchLink from "../components/PrefetchLink.astro";
-import { transactionSpecs } from "../data/transactions.data";
 import { SITE_DESCRIPTION } from "../consts";
+
+const sortEntries = <T extends CollectionEntry<"blog" | "experiments">>(entries: T[]) =>
+  [...entries].sort((a, b) => {
+    const left = (a.data.pubDate ?? a.data.updatedDate)?.getTime() ?? 0;
+    const right = (b.data.pubDate ?? b.data.updatedDate)?.getTime() ?? 0;
+    return right - left;
+  });
+
+const allPosts = sortEntries(await getCollection("blog"));
+const allExperiments = sortEntries(await getCollection("experiments"));
 ---
 
-<Main title="Jon Castro" description={SITE_DESCRIPTION}>
-  <div class="home-wrapper">
-    <div class="hero">
-      <div class="ascii-square-outer">
-        <div class="hero-text-overlay">
-          <h1 class="hero-name">JON CASTRO</h1>
-          <p class="hero-bio dim">
-            Diseno y utilizo herramientas. Este espacio reune guias tecnicas y
-            experimentos que reflejan mi forma de trabajar y mis intereses.
+<Main title="Jon Castro" description={SITE_DESCRIPTION} lang="es">
+  <div class="page-shell home-shell">
+    <header class="page-header">
+      <div class="hero">
+        <div class="hero-copy">
+          <h1 class="hero-name">Jon Castro</h1>
+          <p class="page-intro hero-intro">
+            Diseno herramientas y escribo guias sobre flujo audiovisual,
+            tecnologia y sistemas de trabajo.
           </p>
         </div>
-        <AsciiSquare interactive={true} class="max-w-[320px]" transitionName="ascii-hero" />
+        <div class="hero-rectangle">
+          <AsciiSquare interactive={true} transitionName="ascii-square" />
+        </div>
       </div>
-    </div>
+    </header>
 
-    <div class="mb-12">
-      <PrefetchLink 
-        href="/expense-tracker" 
-        spec={transactionSpecs.list}
-        className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors"
-      >
-        <span>View Snappy Expense Tracker</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </PrefetchLink>
-    </div>
-
-    <ContentTabs />
-    <SiteFooter />
+    <ContentTabs
+      posts={allPosts}
+      experiments={allExperiments}
+      postsLabel="Guias"
+      experimentsLabel="Experimentos"
+    />
   </div>
 </Main>
 
 <style>
-  .home-wrapper {
-    max-width: 760px;
-    margin: 80px auto 0;
-    padding: 0 24px;
-  }
-
   .hero {
-    margin-bottom: 64px;
-    width: 100%;
-  }
-
-  .ascii-square-outer {
-    position: relative;
     display: flex;
-    justify-content: space-between;
     align-items: flex-end;
-    gap: 40px;
-    width: 100%;
+    justify-content: space-between;
+    gap: 2.5rem;
   }
 
-  .hero-text-overlay {
-    max-width: 480px;
+  .hero-copy {
+    max-width: 30rem;
     text-align: right;
   }
 
   .hero-name {
-    font-family: "Martian Mono", monospace;
-    font-weight: 500;
-    font-size: 16px;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    letter-spacing: -0.04em;
     text-transform: uppercase;
-    margin-bottom: 12px;
-    letter-spacing: -1px;
   }
 
-  .hero-bio {
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 48ch;
+  .hero-intro {
+    margin-bottom: 0;
+  }
+
+  .hero-rectangle {
+    width: 100%;
+    max-width: var(--ascii-square-size);
+    flex: 0 0 var(--ascii-square-size);
   }
 
   @media (max-width: 768px) {
-    .ascii-square-outer {
+    .hero {
       flex-direction: column-reverse;
       align-items: flex-start;
-      gap: 32px;
+    }
+
+    .hero-copy {
+      text-align: left;
+    }
+
+    .hero-rectangle {
+      width: 100%;
+      max-width: var(--ascii-square-size);
+      flex-basis: auto;
     }
   }
 </style>

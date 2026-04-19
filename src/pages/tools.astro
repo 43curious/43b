@@ -2,11 +2,10 @@
 import Main from "../layouts/Main.astro";
 ---
 
-<Main title="Herramientas" fullWidth={true} />
-
-<div class="tools-wrapper">
-  <div class="tools-container">
-    <section class="tool-section">
+<Main title="Herramientas" fullWidth={true} lang="es">
+  <div class="tools-wrapper">
+    <div class="tools-container">
+      <section class="tool-section">
       <div class="section-head">
         <p class="section-kicker mono">VIDEO</p>
         <h2 class="section-title">Resolucion y formato</h2>
@@ -68,7 +67,7 @@ import Main from "../layouts/Main.astro";
       </div>
     </section>
 
-    <section class="tool-section">
+      <section class="tool-section">
       <div class="section-head">
         <p class="section-kicker mono">AUDIO</p>
         <h2 class="section-title">Calculadora de loudness</h2>
@@ -105,7 +104,7 @@ import Main from "../layouts/Main.astro";
       </div>
     </section>
 
-    <section class="tool-section">
+      <section class="tool-section">
       <div class="section-head">
         <p class="section-kicker mono">POST</p>
         <h2 class="section-title">Nombre de proyecto y estructura</h2>
@@ -134,9 +133,10 @@ import Main from "../layouts/Main.astro";
       </div>
 
       <pre id="folderStructure" class="folder-structure"></pre>
-    </section>
+      </section>
+    </div>
   </div>
-</div>
+</Main>
 
 <style>
   .tools-wrapper {

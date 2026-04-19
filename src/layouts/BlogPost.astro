@@ -2,88 +2,64 @@
 const { frontmatter } = Astro.props;
 import Main from "./Main.astro";
 import AsciiSquare from "../components/AsciiSquare.astro";
-import SiteFooter from "../components/SiteFooter.astro";
 
 const date = frontmatter.pubDate || frontmatter.updatedDate;
 const formattedDate = date ? new Date(date).toISOString().split("T")[0] : "";
 ---
 
-<Main title={frontmatter.title} description={frontmatter.description}>
-  <div class="post-wrapper">
+<Main title={frontmatter.title} description={frontmatter.description} lang="es">
+  <div class="page-shell post-wrapper">
     <header class="post-header">
       <div class="post-art">
-        <AsciiSquare
-          title={frontmatter.title}
-          class="max-w-[320px] mx-auto mb-20"
-          transitionName="ascii-hero"
-        />
+        <div class="post-rectangle">
+          <AsciiSquare title={frontmatter.title} transitionName="ascii-square" />
+        </div>
       </div>
 
       <div class="post-meta">
-        <span class="post-title">{frontmatter.title}</span>
-        <span class="post-date">{formattedDate}</span>
+        <h1 class="post-title">{frontmatter.title}</h1>
+        {formattedDate && <p class="post-date mono">{formattedDate}</p>}
       </div>
     </header>
 
-    <article class="prose-full post-content">
+    <article class="prose-full">
       <slot />
     </article>
-
-    <SiteFooter />
   </div>
-
 </Main>
-
-<script>
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      window.location.href = "/";
-    }
-  });
-</script>
 
 <style>
   .post-wrapper {
-    max-width: 760px;
-    margin: 0 auto;
-    padding-bottom: 80px;
+    padding-bottom: 4rem;
   }
 
   .post-header {
-    margin: 64px 0 48px;
+    margin-bottom: 3rem;
   }
 
   .post-art {
-    margin-bottom: 16px;
+    margin-bottom: 5rem;
+  }
+
+  .post-rectangle {
+    width: 100%;
+    max-width: var(--ascii-square-size);
+    margin: 0 auto;
   }
 
   .post-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding-top: 16px;
-    margin-bottom: 80px;
-    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--line);
   }
 
-  .post-title,
-  .post-date {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    line-height: 1;
-    text-transform: uppercase;
-    color: var(--dim);
+  .post-title {
+    margin: 0;
+    font-size: clamp(2rem, 6vw, 3rem);
+    line-height: 1.05;
   }
 
   .post-content {
     font-size: 16px;
-  }
-
-  @media (max-width: 640px) {
-    .post-meta {
-      align-items: flex-start;
-      flex-direction: column;
-    }
   }
 </style>

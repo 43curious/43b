@@ -1,82 +1,106 @@
 ---
-import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import ArticleCard from "./ArticleCard.astro";
 import ExperimentCard from "./ExperimentCard.astro";
 
-const allPosts = (await getCollection("blog")).sort((a, b) =>
-  a.data.title.localeCompare(b.data.title),
-);
+interface Props {
+  posts: CollectionEntry<"blog">[];
+  experiments: CollectionEntry<"experiments">[];
+  postsLabel?: string;
+  experimentsLabel?: string;
+}
 
-const allExperiments = (await getCollection("experiments")).sort((a, b) =>
-  a.data.title.localeCompare(b.data.title),
-);
+const {
+  posts,
+  experiments,
+  postsLabel = "Guias",
+  experimentsLabel = "Experimentos",
+} = Astro.props;
 ---
 
-<div class="content-tabs">
-  <input type="radio" name="tab" id="tab-1" checked class="tab-switch hidden" />
-  <input type="radio" name="tab" id="tab-2" class="tab-switch hidden" />
+<section class="content-tabs">
+  <input id="tab-posts" class="tab-input" type="radio" name="content-tabs" checked />
+  <input id="tab-experiments" class="tab-input" type="radio" name="content-tabs" />
 
-  <div class="tabs-nav mono">
-    <label for="tab-1" class="tab-label">GUIAS</label>
-    <label for="tab-2" class="tab-label">EXPERIMENTOS</label>
-  </div>
+  <nav class="tabs-nav" role="tablist" aria-label="Content sections">
+    <label class="tab-label" for="tab-posts" role="tab" aria-controls="panel-posts">
+      {postsLabel}
+    </label>
+    <label class="tab-label" for="tab-experiments" role="tab" aria-controls="panel-experiments">
+      {experimentsLabel}
+    </label>
+  </nav>
 
-  <div class="tab-panel" id="panel-1">
-    <div class="rows-list">
-      {allPosts.map((p) => <ArticleCard blog={p} />)}
+  <div id="panel-posts" class="tab-panel">
+    <div class="entry-list">
+      {posts.map((post) => <ArticleCard blog={post} />)}
     </div>
   </div>
 
-  <div class="tab-panel" id="panel-2">
-    <div class="rows-list">
-      {allExperiments.map((p) => <ExperimentCard experiments={p} />)}
+  <div id="panel-experiments" class="tab-panel">
+    <div class="entry-list">
+      {experiments.map((experiment) => <ExperimentCard experiments={experiment} />)}
     </div>
   </div>
-</div>
+</section>
 
 <style>
-  /* Tabs System */
   .content-tabs {
-    margin-bottom: 80px;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .tab-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .tabs-nav {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 32px;
+    display: inline-flex;
+    gap: 1.25rem;
+    width: fit-content;
   }
 
   .tab-label {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid transparent;
     cursor: pointer;
     color: var(--dim);
-    transition: all 0.15s;
-  }
-
-  .tab-label:hover {
-    color: var(--text);
-    background: var(--hover);
-  }
-
-  #tab-1:checked ~ .tabs-nav label[for="tab-1"],
-  #tab-2:checked ~ .tabs-nav label[for="tab-2"] {
-    color: var(--text);
-    background: var(--hover);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    opacity: 0.45;
+    text-transform: uppercase;
+    transition: color 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
   }
 
   .tab-panel {
     display: none;
   }
 
-  #tab-1:checked ~ #panel-1,
-  #tab-2:checked ~ #panel-2 {
+  #tab-posts:checked ~ .tabs-nav label[for="tab-posts"],
+  #tab-experiments:checked ~ .tabs-nav label[for="tab-experiments"] {
+    color: var(--text);
+    opacity: 1;
+    border-bottom-color: var(--text);
+  }
+
+  #tab-posts:checked ~ #panel-posts,
+  #tab-experiments:checked ~ #panel-experiments {
     display: block;
   }
 
-  .rows-list {
-    display: flex;
-    flex-direction: column;
+  @media (max-width: 640px) {
+    .tabs-nav {
+      gap: 1rem;
+    }
+
+    .tab-label {
+      justify-content: flex-start;
+    }
   }
 </style>

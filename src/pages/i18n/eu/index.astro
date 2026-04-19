@@ -1,23 +1,90 @@
 ---
-import { getCollection } from "astro:content";
-import Main from '../../../layouts/Main.astro'
-import ArticleCard from '../../../components/ArticleCard.astro'
-import ExperimentCard from "../../../components/ExperimentCard.astro";
-const allPosts = await getCollection("blog");
-const allExperiments = await getCollection("experiments");
+import { getCollection, type CollectionEntry } from "astro:content";
+import Main from '../../../layouts/Main.astro';
+import AsciiSquare from "../../../components/AsciiSquare.astro";
+import ContentTabs from "../../../components/ContentTabs.astro";
+
+const sortEntries = <T extends CollectionEntry<"blog" | "experiments">>(entries: T[]) =>
+  [...entries].sort((a, b) => {
+    const left = (a.data.pubDate ?? a.data.updatedDate)?.getTime() ?? 0;
+    const right = (b.data.pubDate ?? b.data.updatedDate)?.getTime() ?? 0;
+    return right - left;
+  });
+
+const allPosts = sortEntries(await getCollection("blog"));
+const allExperiments = sortEntries(await getCollection("experiments"));
 ---
 
-<Main title="Castro">
-	<body class="">
-		<div class="h-full mt-20 mb-10">
-		<h1 class="text-3xl px-2 mb-6">Gidak</h1>
-		<hr class="mb-10 mx-1.5">
-			{allPosts.map((p) => <ArticleCard blog={p}/>)}
-		<div class="mt-20">
-			<h1 class="text-3xl px-2 mb-6">Esperimentuak</h1>
-			<hr class="mb-10 mx-1.5">
-			{allExperiments.map((p) => <ExperimentCard experiments={p}/>)}
-		</div>	
-		</div>
-	</body>
+<Main title="Jon Castro" lang="eu">
+  <div class="page-shell home-shell">
+    <header class="page-header">
+      <div class="hero">
+        <div class="hero-copy">
+          <h1 class="hero-name">Jon Castro</h1>
+          <p class="page-intro hero-intro">
+            Lan-fluxuei, tresnei eta sistema teknikoei buruzko gidak eta esperimentuak.
+          </p>
+        </div>
+        <div class="hero-rectangle">
+          <AsciiSquare interactive={true} />
+        </div>
+      </div>
+    </header>
+
+    <ContentTabs
+      posts={allPosts}
+      experiments={allExperiments}
+      postsLabel="Gidak"
+      experimentsLabel="Esperimentuak"
+    />
+  </div>
 </Main>
+
+<style>
+  .hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2.5rem;
+  }
+
+  .hero-copy {
+    max-width: 30rem;
+    text-align: right;
+  }
+
+  .hero-name {
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+
+  .hero-intro {
+    margin-bottom: 0;
+  }
+
+  .hero-rectangle {
+    width: 100%;
+    max-width: var(--ascii-square-size);
+    flex: 0 0 var(--ascii-square-size);
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+    }
+
+    .hero-copy {
+      text-align: left;
+    }
+
+    .hero-rectangle {
+      width: 100%;
+      max-width: var(--ascii-square-size);
+      flex-basis: auto;
+    }
+  }
+</style>

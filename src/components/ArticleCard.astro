@@ -4,16 +4,17 @@ type Props = {
   blog: CollectionEntry<"blog">;
 };
 const { blog } = Astro.props;
-const { title, updatedDate } = blog.data;
-const formattedDate = updatedDate
-  ? new Date(updatedDate).toISOString().split("T")[0]
+const { title, pubDate, updatedDate } = blog.data;
+const publishedAt = pubDate ?? updatedDate;
+const formattedDate = publishedAt
+  ? new Date(publishedAt).toISOString().split("T")[0]
   : "";
 ---
 
 <a href={`/blog/${blog.id}`} class="article-row">
-  <div class="row-content flex justify-between items-center w-full">
+  <div class="row-content">
     <span class="title">{title}</span>
-    <span class="meta mono dim">{formattedDate}</span>
+    {formattedDate && <span class="meta mono dim">{formattedDate}</span>}
   </div>
 </a>
 

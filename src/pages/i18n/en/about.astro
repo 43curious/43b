@@ -1,36 +1,31 @@
 ---
-import Main from "../../../layouts/Main.astro"
-import '../../../styles/global.css'
+import Main from "../../../layouts/Main.astro";
 ---
 
-<Main title="About me - Castro" description="The about page for Castro">
-	<body>
-		<div class="h-full mt-20 mb-10">
-      <h1 class="text-3xl px-2 mb-6">About me</h1>
-      <hr class="mb-8 mx-1.5">
-      <p class="px-2">Hi! I'm Jon.</p>
-      <p class="px-2">I write guides about technology, audiovisual workflow and every interesting topic I come across. 
-        I value concise explanation, information that helps me learn and tools made with great purpose. I hope you come 
-        across new topics here and manage to learn something new. Thanks for passing by! 
+<Main title="About - Jon Castro" description="About Jon Castro" lang="en">
+  <div class="page-shell page-copy">
+    <header class="page-header">
+      <h1>About</h1>
+      <p class="page-intro">
+        I write concise guides about technology, audiovisual workflow, and useful systems.
       </p>
-      <p class="px-2">This site is made with:
-        <ul class="px-2 list-inside list-disc mb-10">
-          <li><a target="_blank" href="https://astro.build/">Astro</a> as a framework,</li>
-          <li><a target="_blank" href="https://tailwindcss.com/">Tailwind</a> for styling,</li>
-          <li><a target="_blank" href="https://www.markdownguide.org/">Markdown</a> as writing format,</li>
-          <li>deployed in <a target="_blank" href="https://www.netlify.com/">Netlify</a>,</li>
-          <li>and uses <a target="_blank" href="https://github.com/kepano/flexoki">Flexoki</a> theme and <a href="https://vercel.com/font">Geist</a> font.</li>  
-        </ul>
-      </p>
-      <p class="px-2">I use the following tools to make my work:
-          <ul class="px-2 list-inside list-disc mb-10">
-            <li><a target="_blank" href="https://obsidian.md/">Obsidian</a> for writing and notes,</li>
-            <li><a target="_blank" href="https://culturedcode.com/things/">Things</a> for tasks,</li>
-            <li><a target="_blank" href="https://code.visualstudio.com/">Visual Studio Code</a> for coding</li>
-            <li> and <a target="_blank" href="https://www.blackmagicdesign.com/es/products/davinciresolve/">DaVinci Resolve</a> for video editing.</li>  
-          </ul>
-      </p>
-      <p>Need something?</p>
-		</div>
-	</body>
+    </header>
+
+    <section class="section-list prose">
+      <h2>Built with</h2>
+      <ul>
+        <li><a target="_blank" href="https://astro.build/">Astro</a> for the site.</li>
+        <li><a target="_blank" href="https://www.markdownguide.org/">Markdown</a> and MDX for writing.</li>
+        <li><a target="_blank" href="https://www.netlify.com/">Netlify</a> for deployment.</li>
+      </ul>
+
+      <h2>Daily tools</h2>
+      <ul>
+        <li><a target="_blank" href="https://obsidian.md/">Obsidian</a> for notes and drafts.</li>
+        <li><a target="_blank" href="https://culturedcode.com/things/">Things</a> for tasks.</li>
+        <li><a target="_blank" href="https://code.visualstudio.com/">Visual Studio Code</a> for code.</li>
+        <li><a target="_blank" href="https://www.blackmagicdesign.com/es/products/davinciresolve/">DaVinci Resolve</a> for editing.</li>
+      </ul>
+    </section>
+  </div>
 </Main>

@@ -9,13 +9,13 @@ const {
   description = SITE_DESCRIPTION,
   url = Astro.url,
   image,
-  frontmatter,
   robots,
+  lang = "es",
   fullWidth = false,
 } = Astro.props;
 ---
 
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -24,17 +24,11 @@ const {
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@300&display=swap"
-      rel="stylesheet"
-    />
-    <Seo {title} {description} {url} {image} {frontmatter} {robots} />
+    <Seo {title} {description} {url} {image} {robots} />
   </head>
   <body>
     <Nav />
-    <main class={fullWidth ? "w-full" : "container"}>
+    <main class={fullWidth ? "container-wide" : "container"}>
       <slot />
     </main>
   </body>
