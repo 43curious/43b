@@ -1,5 +1,4 @@
 ---
-import { ClientRouter } from "astro:transitions";
 import Nav from "../components/Nav.astro";
 import Seo from "../components/Seo.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
@@ -19,7 +18,6 @@ const {
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <ClientRouter />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

@@ -1,26 +1,386 @@
 ---
+import { ALL_ICON_SHAPES, PALETTES, titleToIconShape, type IconShapeKey } from "../lib/ascii-config";
+import { getIconShapeCells } from "../lib/ascii-shapes";
+
 interface Props {
   interactive?: boolean;
   title?: string;
   class?: string;
-  transitionName?: string;
 }
+
+type ShapeKey = "home" | IconShapeKey;
+type Cell = { x: number; y: number; fill: string; opacity: number };
 
 const {
   interactive = false,
   title = "",
   class: className = "",
-  transitionName,
 } = Astro.props;
+
+const GRID_SIZE = 18;
+const VIEWBOX = 320;
+const PADDING = 18;
+const GAP = 4;
+const CELL_SIZE = 12;
+
+function titleToShape(value: string): ShapeKey {
+  if (interactive) return "home";
+  return titleToIconShape(value);
+}
+
+function hashString(value: string) {
+  let hash = 1779033703;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = Math.imul(hash ^ value.charCodeAt(i), 3432918353);
+    hash = (hash << 13) | (hash >>> 19);
+  }
+  return (hash >>> 0) || 1;
+}
+
+function createRandom(seed: number) {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6d2b79f5;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function keyFor(x: number, y: number) {
+  return `${x}:${y}`;
+}
+
+function addCell(cells: Set<string>, x: number, y: number) {
+  if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) return;
+  cells.add(keyFor(x, y));
+}
+
+function addRect(cells: Set<string>, x0: number, y0: number, x1: number, y1: number) {
+  for (let y = y0; y <= y1; y += 1) {
+    for (let x = x0; x <= x1; x += 1) {
+      addCell(cells, x, y);
+    }
+  }
+}
+
+function addLine(cells: Set<string>, x0: number, y0: number, x1: number, y1: number) {
+  let currentX = x0;
+  let currentY = y0;
+  const deltaX = Math.abs(x1 - x0);
+  const deltaY = -Math.abs(y1 - y0);
+  const stepX = x0 < x1 ? 1 : -1;
+  const stepY = y0 < y1 ? 1 : -1;
+  let error = deltaX + deltaY;
+
+  while (true) {
+    addCell(cells, currentX, currentY);
+    if (currentX === x1 && currentY === y1) break;
+    const doubledError = 2 * error;
+    if (doubledError >= deltaY) {
+      error += deltaY;
+      currentX += stepX;
+    }
+    if (doubledError <= deltaX) {
+      error += deltaX;
+      currentY += stepY;
+    }
+  }
+}
+
+function addRing(cells: Set<string>, cx: number, cy: number, radius: number, thickness: number) {
+  for (let y = 0; y < GRID_SIZE; y += 1) {
+    for (let x = 0; x < GRID_SIZE; x += 1) {
+      const dx = x + 0.5 - cx;
+      const dy = y + 0.5 - cy;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance <= radius && distance >= radius - thickness) {
+        addCell(cells, x, y);
+      }
+    }
+  }
+}
+
+function buildShapeCells(shape: ShapeKey) {
+  const cells = new Set<string>();
+
+  switch (shape) {
+    case "home":
+      addRing(cells, 9, 9, 6.2, 1.35);
+      addLine(cells, 3, 3, 14, 14);
+      addLine(cells, 14, 3, 3, 14);
+      addRect(cells, 8, 4, 9, 13);
+      addRect(cells, 4, 8, 13, 9);
+      break;
+    case "faq":
+      addRect(cells, 3, 3, 12, 4);
+      addRect(cells, 3, 4, 4, 9);
+      addRect(cells, 11, 4, 12, 9);
+      addRect(cells, 4, 9, 10, 10);
+      addLine(cells, 9, 10, 11, 12);
+      addRect(cells, 7, 5, 8, 6);
+      addRect(cells, 8, 6, 9, 7);
+      addRect(cells, 7, 7, 8, 8);
+      addRect(cells, 7, 10, 8, 10);
+      break;
+    case "musica":
+      addRect(cells, 8, 3, 9, 10);
+      addRect(cells, 5, 4, 9, 5);
+      addRect(cells, 10, 5, 11, 9);
+      addRing(cells, 6.5, 11, 2.2, 1.2);
+      addRing(cells, 10.5, 10, 2.2, 1.2);
+      break;
+    case "utilidades":
+      addRect(cells, 7, 3, 8, 12);
+      addRect(cells, 3, 7, 12, 8);
+      addRect(cells, 5, 5, 10, 10);
+      addRect(cells, 6, 6, 9, 9);
+      cells.delete(keyFor(7, 7));
+      cells.delete(keyFor(8, 7));
+      cells.delete(keyFor(7, 8));
+      cells.delete(keyFor(8, 8));
+      break;
+    case "color":
+      addRing(cells, 8, 8, 5.3, 1.8);
+      addRect(cells, 10, 9, 12, 11);
+      addRect(cells, 6, 4, 6, 4);
+      addRect(cells, 4, 7, 4, 7);
+      addRect(cells, 7, 11, 7, 11);
+      break;
+    case "organizar":
+      addRect(cells, 2, 4, 11, 5);
+      addRect(cells, 2, 5, 3, 8);
+      addRect(cells, 10, 5, 11, 8);
+      addRect(cells, 3, 8, 10, 9);
+      addRect(cells, 5, 2, 13, 3);
+      addRect(cells, 5, 3, 6, 6);
+      addRect(cells, 12, 3, 13, 6);
+      addRect(cells, 6, 6, 12, 7);
+      break;
+    case "fcpx":
+      addRect(cells, 2, 4, 13, 5);
+      addRect(cells, 2, 10, 13, 11);
+      addRect(cells, 2, 5, 3, 10);
+      addRect(cells, 12, 5, 13, 10);
+      addRect(cells, 5, 7, 10, 8);
+      addRect(cells, 5, 8, 6, 9);
+      addRect(cells, 9, 8, 10, 9);
+      cells.delete(keyFor(3, 6));
+      cells.delete(keyFor(3, 8));
+      cells.delete(keyFor(12, 6));
+      cells.delete(keyFor(12, 8));
+      break;
+    case "recursos":
+      addRect(cells, 3, 3, 4, 12);
+      addRect(cells, 7, 2, 8, 13);
+      addRect(cells, 11, 4, 12, 12);
+      addRect(cells, 2, 12, 5, 13);
+      addRect(cells, 6, 13, 9, 13);
+      addRect(cells, 10, 12, 13, 13);
+      break;
+    case "computer":
+      addRect(cells, 3, 4, 12, 5);
+      addRect(cells, 3, 5, 4, 10);
+      addRect(cells, 11, 5, 12, 10);
+      addRect(cells, 4, 10, 11, 11);
+      addRect(cells, 7, 12, 8, 13);
+      addRect(cells, 5, 14, 10, 14);
+      break;
+    case "astro":
+      addLine(cells, 8, 2, 8, 13);
+      addLine(cells, 2, 8, 13, 8);
+      addLine(cells, 4, 4, 12, 12);
+      addLine(cells, 12, 4, 4, 12);
+      addRect(cells, 7, 7, 8, 8);
+      break;
+  }
+
+  return cells;
+}
+
+async function resolveShapeCells(shape: ShapeKey) {
+  if (shape === "home") {
+    return buildShapeCells(shape);
+  }
+
+  try {
+    return await getIconShapeCells(shape, GRID_SIZE);
+  } catch {
+    return buildShapeCells(shape);
+  }
+}
+
+function buildAmbientCells(shapeCells: Set<string>, seed: number) {
+  const random = createRandom(seed);
+  const ambientCells = new Set<string>();
+  let attempts = 0;
+  const target = interactive ? 22 : 14;
+
+  while (ambientCells.size < target && attempts < 240) {
+    const x = Math.floor(random() * GRID_SIZE);
+    const y = Math.floor(random() * GRID_SIZE);
+    const key = keyFor(x, y);
+    attempts += 1;
+
+    if (shapeCells.has(key) || ambientCells.has(key)) continue;
+    if (Math.abs(x - 8.5) + Math.abs(y - 8.5) < 3) continue;
+
+    ambientCells.add(key);
+  }
+
+  return ambientCells;
+}
+
+function hsl(hue: number, saturation: number, lightness: number, opacity = 1) {
+  return `hsl(${hue} ${saturation}% ${lightness}% / ${opacity})`;
+}
+
+function toCells(
+  keys: Set<string>,
+  palette: { hue: number; saturation: number; lightness: number },
+  seed: number,
+) {
+  return [...keys]
+    .map((key) => {
+      const [x, y] = key.split(":").map(Number);
+      const offset = ((x * 11 + y * 7 + seed) % 12) - 4;
+      return {
+        x,
+        y,
+        fill: hsl(palette.hue, palette.saturation, palette.lightness + offset, 1),
+        opacity: 0.98,
+      } satisfies Cell;
+    })
+    .sort((left, right) => left.y - right.y || left.x - right.x);
+}
+
+function toAmbientCells(
+  keys: Set<string>,
+  palette: { hue: number; saturation: number; lightness: number },
+  seed: number,
+) {
+  return [...keys]
+    .map((key) => {
+      const [x, y] = key.split(":").map(Number);
+      const offset = ((x * 5 + y * 3 + seed) % 8) - 2;
+      return {
+        x,
+        y,
+        fill: hsl(palette.hue, Math.max(18, palette.saturation - 50), 86 + offset, 1),
+        opacity: 0.75,
+      } satisfies Cell;
+    })
+    .sort((left, right) => left.y - right.y || left.x - right.x);
+}
+
+const shape = titleToShape(title);
+const seed = hashString(`${shape}:${title}:${interactive ? "interactive" : "static"}`);
+const instanceId = `ascii-${hashString(`${Astro.url.pathname}:${interactive}:${title}:${className}`).toString(36)}`;
+const displayShape = interactive ? "home" : shape;
+const displayShapeCells = await resolveShapeCells(displayShape);
+const ambientCells = buildAmbientCells(displayShapeCells, seed);
+const fadedCells = toAmbientCells(ambientCells, PALETTES.home, seed);
+const filledCells = interactive
+  ? []
+  : toCells(displayShapeCells, PALETTES[displayShape], seed);
+const interactiveShapes = interactive
+  ? await Promise.all(
+      (["home", ...ALL_ICON_SHAPES] as ShapeKey[]).map(async (shapeKey) => ({
+        key: shapeKey,
+        symbolId: `${instanceId}-shape-${shapeKey}`,
+        cells: toCells(
+          await resolveShapeCells(shapeKey),
+          PALETTES[shapeKey],
+          hashString(`${instanceId}:${shapeKey}`),
+        ),
+      })),
+    )
+  : [];
+const patternId = `ascii-grid-${seed.toString(36)}`;
+const activeShapeId = `${instanceId}-shape-home`;
+const label = title ? `Decorative artwork for ${title}` : "Decorative artwork";
 ---
 
 <div
-  class={`ascii-square-wrapper ${className}`}
-  data-interactive={interactive.toString()}
-  data-title={title}
-  transition:name={transitionName}
+  class={`ascii-square-wrapper ${className}`.trim()}
+  data-ascii-interactive={interactive ? "true" : "false"}
+  data-ascii-shape-prefix={interactive ? `${instanceId}-shape-` : undefined}
+  data-ascii-default-shape={interactive ? "home" : undefined}
 >
-  <div class="ascii-square" aria-label="Interactive ASCII Grid"></div>
+  <svg
+    class="ascii-square"
+    viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}
+    role="img"
+    aria-label={label}
+    preserveAspectRatio="xMidYMid meet"
+  >
+    <defs>
+      <pattern id={patternId} width={CELL_SIZE + GAP} height={CELL_SIZE + GAP} patternUnits="userSpaceOnUse">
+        <rect width={CELL_SIZE} height={CELL_SIZE} rx="2" fill="rgba(214, 214, 214, 0.2)"></rect>
+      </pattern>
+      {
+        interactiveShapes.map((shapeDefinition) => (
+          <symbol id={shapeDefinition.symbolId} viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
+            {
+              shapeDefinition.cells.map((cell) => (
+                <rect
+                  x={PADDING + cell.x * (CELL_SIZE + GAP)}
+                  y={PADDING + cell.y * (CELL_SIZE + GAP)}
+                  width={CELL_SIZE}
+                  height={CELL_SIZE}
+                  rx="2"
+                  fill={cell.fill}
+                  opacity={cell.opacity}
+                />
+              ))
+            }
+          </symbol>
+        ))
+      }
+    </defs>
+
+    <rect x="1" y="1" width={VIEWBOX - 2} height={VIEWBOX - 2} rx="20" class="frame"></rect>
+    <rect
+      x={PADDING}
+      y={PADDING}
+      width={VIEWBOX - PADDING * 2}
+      height={VIEWBOX - PADDING * 2}
+      fill={`url(#${patternId})`}
+    ></rect>
+
+    {
+      fadedCells.map((cell) => (
+        <rect
+          x={PADDING + cell.x * (CELL_SIZE + GAP)}
+          y={PADDING + cell.y * (CELL_SIZE + GAP)}
+          width={CELL_SIZE}
+          height={CELL_SIZE}
+          rx="2"
+          fill={cell.fill}
+          opacity={cell.opacity}
+        />
+      ))
+    }
+
+    {interactive ? <use data-ascii-active-use href={`#${activeShapeId}`}></use> : null}
+
+    {
+      !interactive
+        ? filledCells.map((cell) => (
+            <rect
+              x={PADDING + cell.x * (CELL_SIZE + GAP)}
+              y={PADDING + cell.y * (CELL_SIZE + GAP)}
+              width={CELL_SIZE}
+              height={CELL_SIZE}
+              rx="2"
+              fill={cell.fill}
+              opacity={cell.opacity}
+            />
+          ))
+        : null
+    }
+  </svg>
 </div>
 
 <style>
@@ -29,303 +389,114 @@ const {
   }
 
   .ascii-square {
-    display: grid;
-    gap: 1px;
+    display: block;
     width: 100%;
-    aspect-ratio: 1;
-    padding: 12px;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    color: #e0e0e0;
-    font-family: var(--font-mono);
-    font-size: 8px;
-    line-height: 1;
-    user-select: none;
+    height: auto;
   }
 
-  :global(.ascii-square .cell) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.6s ease;
-    cursor: default;
-  }
-
-  :global(.ascii-square .cell.trail) {
-    transition: color 0s;
-  }
-
-  :global(.ascii-square .cell.shape) {
-    font-weight: 900;
-    transform: scale(1.3);
-    transition:
-      color 0.15s ease,
-      filter 1.8s ease-in-out;
-  }
-
-  @keyframes idleBreath {
-    0% {
-      filter: brightness(1) saturate(1);
-    }
-    50% {
-      filter: brightness(1.45) saturate(1.25);
-    }
-    100% {
-      filter: brightness(1) saturate(1);
-    }
-  }
-
-  :global(.ascii-square .cell.shape.idle) {
-    animation: idleBreath 3s infinite alternate;
+  .frame {
+    fill: var(--surface);
+    stroke: var(--line);
+    stroke-width: 2;
   }
 </style>
 
-<script>
-  const SHAPES = {
-    faq: { icon: "/icons/faq.png", color: "hsl(45, 100%, 45%)" },
-    musica: { icon: "/icons/musica.svg", color: "hsl(280, 100%, 55%)" },
-    utilidades: { icon: "/icons/utilidades.svg", color: "hsl(210, 100%, 50%)" },
-    color: { icon: "/icons/DaVinci_Resolve_Studio.png", color: "hsl(220, 90%, 55%)" },
-    organizar: { icon: "/icons/organizar.svg", color: "hsl(140, 100%, 40%)" },
-    fcpx: { icon: "/icons/fcpx.png", color: "hsl(310, 100%, 60%)" },
-    recursos: { icon: "/icons/recursos.svg", color: "hsl(180, 100%, 40%)" },
-    computer: { icon: "/icons/computer.svg", color: "hsl(25, 100%, 55%)" },
-    astro: { icon: "/icons/astro.svg", color: "hsl(330, 100%, 55%)" },
-  };
-  type ShapeKey = keyof typeof SHAPES;
-  type GridCell = HTMLDivElement;
-  type RenderState = { current: number; token: number };
+{
+  interactive && (
+    <script>
+      type HoverShapeKey =
+        | "home"
+        | "faq"
+        | "musica"
+        | "utilidades"
+        | "color"
+        | "organizar"
+        | "fcpx"
+        | "recursos"
+        | "computer"
+        | "astro";
 
-  const TITLE_MAP = {
-    faq: "faq",
-    musica: "musica",
-    "música": "musica",
-    utilidades: "utilidades",
-    color: "color",
-    "gestion de color": "color",
-    organizar: "organizar",
-    organizart: "organizar",
-    "final cut pro": "fcpx",
-    recursos: "recursos",
-    computer: "computer",
-    ordenador: "computer",
-    astro: "astro",
-    blog: "astro",
-  };
+      const ROW_SELECTOR = ".article-row[data-shape], .experiment-row[data-shape]";
 
-  const CHARS = ["░", "▒", "▓"];
-  const TRAIL_COLORS = [
-    "hsl(210,100%,60%)",
-    "hsl(280,100%,65%)",
-    "hsl(140,100%,50%)",
-    "hsl(25,100%,60%)",
-    "hsl(0,100%,65%)",
-    "hsl(180,100%,50%)",
-    "hsl(330,100%,60%)",
-    "hsl(45,100%,50%)",
-  ];
-  const iconCache = new Map<string, Promise<Set<number>>>();
+      function initInteractiveAsciiSquares() {
+        document
+          .querySelectorAll<HTMLElement>('[data-ascii-interactive="true"]')
+          .forEach((root) => {
+            if (root.dataset.ready === "true") return;
+            root.dataset.ready = "true";
 
-  function titleToShape(title: string): ShapeKey | null {
-    const lower = title.toLowerCase();
-    for (const [keyword, shape] of Object.entries(TITLE_MAP) as [string, ShapeKey][]) {
-      if (lower.includes(keyword)) return shape;
-    }
-    return null;
-  }
+            const activeUse = root.querySelector<SVGUseElement>("[data-ascii-active-use]");
+            const shapePrefix = root.dataset.asciiShapePrefix ?? "";
+            const defaultShape = (root.dataset.asciiDefaultShape ?? "home") as HoverShapeKey;
 
-  function randomChar() {
-    return CHARS[Math.floor(Math.random() * CHARS.length)];
-  }
+            if (!activeUse || !shapePrefix) return;
 
-  function rasterizeIcon(src: string, gridSize: number): Promise<Set<number>> {
-    const cacheKey = `${src}:${gridSize}`;
-    if (iconCache.has(cacheKey)) return iconCache.get(cacheKey)!;
+            let activeRow: HTMLElement | null = null;
 
-    const promise = new Promise<Set<number>>((resolve) => {
-      const img = new Image();
+            const setShape = (shape: HoverShapeKey) => {
+              activeUse.setAttribute("href", `#${shapePrefix}${shape}`);
+            };
 
-      img.onload = () => {
-        const sampleScale = 8;
-        const sampleSize = gridSize * sampleScale;
-        const padding = 2 * sampleScale;
-        const targetSize = sampleSize - padding * 2;
+            const findRow = (target: EventTarget | null) =>
+              target instanceof Element ? target.closest<HTMLElement>(ROW_SELECTOR) : null;
 
-        const canvas = document.createElement("canvas");
-        canvas.width = sampleSize;
-        canvas.height = sampleSize;
+            const activateRow = (row: HTMLElement | null) => {
+              if (!row) return false;
 
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          resolve(new Set());
-          return;
-        }
+              const shape = row.dataset.shape as HoverShapeKey | undefined;
+              if (!shape) return false;
 
-        const scale = targetSize / Math.max(img.width, img.height);
-        const scaledWidth = img.width * scale;
-        const scaledHeight = img.height * scale;
-        const offsetX = padding + (targetSize - scaledWidth) / 2;
-        const offsetY = padding + (targetSize - scaledHeight) / 2;
+              activeRow = row;
+              setShape(shape);
+              return true;
+            };
 
-        ctx.clearRect(0, 0, sampleSize, sampleSize);
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+            document.addEventListener(
+              "pointerover",
+              (event) => {
+                activateRow(findRow(event.target));
+              },
+              { passive: true },
+            );
 
-        const { data } = ctx.getImageData(0, 0, sampleSize, sampleSize);
-        const activeCells = new Set<number>();
+            document.addEventListener(
+              "pointerout",
+              (event) => {
+                if (!activeRow) return;
+                if (!(event.target instanceof Node) || !activeRow.contains(event.target)) return;
+                if (event.relatedTarget instanceof Node && activeRow.contains(event.relatedTarget)) return;
 
-        for (let y = 0; y < gridSize; y++) {
-          for (let x = 0; x < gridSize; x++) {
-            let filledPixels = 0;
+                activeRow = null;
+                setShape(defaultShape);
+              },
+              { passive: true },
+            );
 
-            for (let sy = 0; sy < sampleScale; sy++) {
-              for (let sx = 0; sx < sampleScale; sx++) {
-                const sampleX = x * sampleScale + sx;
-                const sampleY = y * sampleScale + sy;
-                const i = (sampleY * sampleSize + sampleX) * 4;
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const a = data[i + 3];
+            document.addEventListener(
+              "focusin",
+              (event) => {
+                activateRow(findRow(event.target));
+              },
+              { passive: true },
+            );
 
-                if (a >= 128 && !(r > 240 && g > 240 && b > 240)) {
-                  filledPixels += 1;
-                }
-              }
-            }
+            document.addEventListener(
+              "focusout",
+              (event) => {
+                if (!activeRow) return;
+                if (!(event.target instanceof Node) || !activeRow.contains(event.target)) return;
+                if (event.relatedTarget instanceof Node && activeRow.contains(event.relatedTarget)) return;
 
-            if (filledPixels / (sampleScale * sampleScale) >= 0.34) {
-              activeCells.add(y * gridSize + x);
-            }
-          }
-        }
-
-        resolve(activeCells);
-      };
-
-      img.onerror = () => resolve(new Set());
-      img.src = src;
-    });
-
-    iconCache.set(cacheKey, promise);
-    return promise;
-  }
-
-  function clearShape(cells: GridCell[]) {
-    cells.forEach((cell) => {
-      cell.classList.remove("shape", "idle", "trail");
-      cell.textContent = randomChar();
-      cell.style.color = "";
-      cell.style.animationDelay = "";
-    });
-  }
-
-  async function drawShape(
-    cells: GridCell[],
-    gridSize: number,
-    shapeKey: ShapeKey | null,
-    isStatic = false,
-    tokenRef?: RenderState,
-  ) {
-    if (!shapeKey) return;
-
-    const shape = SHAPES[shapeKey];
-    if (!shape) return;
-
-    const activeCells = await rasterizeIcon(shape.icon, gridSize);
-    if (tokenRef && tokenRef.current !== tokenRef.token) return;
-
-    const [, hue] = shape.color.match(/hsl\((\d+)/) ?? [];
-    activeCells.forEach((idx: number) => {
-      const cell = cells[idx];
-      if (!cell) return;
-      cell.classList.add("shape");
-      if (isStatic) {
-        cell.classList.add("idle");
-        cell.style.animationDelay = `${Math.random() * 2}s`;
-      }
-      cell.textContent = "▓";
-      const lightness = 35 + Math.random() * 20;
-      cell.style.color = `hsl(${hue}, 90%, ${Math.round(lightness)}%)`;
-    });
-  }
-
-  function initSquare(wrapper: HTMLElement) {
-    if (wrapper.dataset.ready === "true") return;
-    wrapper.dataset.ready = "true";
-
-    const square = wrapper.querySelector(".ascii-square") as HTMLElement | null;
-    if (!square) return;
-
-    const interactive = wrapper.dataset.interactive === "true";
-    const staticTitle = wrapper.dataset.title || "";
-    const gridSize = 32;
-    const cells: GridCell[] = [];
-    const renderState = { current: 0, token: 0 };
-
-    square.innerHTML = "";
-    square.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-
-    for (let i = 0; i < gridSize * gridSize; i++) {
-      const cell = document.createElement("div") as GridCell;
-      cell.className = "cell";
-      cell.textContent = randomChar();
-
-      if (interactive) {
-        cell.addEventListener("pointerover", () => {
-          if (cell.classList.contains("shape")) return;
-          cell.classList.add("trail");
-          cell.style.color =
-            TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)];
-          setTimeout(() => {
-            cell.classList.remove("trail");
-            if (!cell.classList.contains("shape")) cell.style.color = "";
-          }, 600);
-        });
+                activeRow = null;
+                setShape(defaultShape);
+              },
+              { passive: true },
+            );
+          });
       }
 
-      square.appendChild(cell);
-      cells.push(cell);
-    }
-
-    const activateShape = (title: string) => {
-      renderState.current += 1;
-      renderState.token = renderState.current;
-      clearShape(cells);
-      drawShape(cells, gridSize, titleToShape(title), false, renderState);
-    };
-
-    const resetShape = () => {
-      renderState.current += 1;
-      renderState.token = renderState.current;
-      clearShape(cells);
-    };
-
-    if (interactive) {
-      const rows = document.querySelectorAll(".article-row, .experiment-row");
-      rows.forEach((row) => {
-        row.addEventListener("mouseenter", () => {
-          const title = row.querySelector(".title")?.textContent ?? "";
-          activateShape(title);
-        });
-        row.addEventListener("mouseleave", resetShape);
-      });
-
-      Object.values(SHAPES).forEach((shape) => {
-        rasterizeIcon(shape.icon, gridSize);
-      });
-    } else if (staticTitle) {
-      drawShape(cells, gridSize, titleToShape(staticTitle), true, renderState);
-    }
-  }
-
-  function initSquares() {
-    document
-      .querySelectorAll(".ascii-square-wrapper")
-      .forEach((wrapper) => initSquare(wrapper as HTMLElement));
-  }
-
-  initSquares();
-  document.addEventListener("astro:page-load", initSquares);
-</script>
+      initInteractiveAsciiSquares();
+      document.addEventListener("astro:page-load", initInteractiveAsciiSquares);
+    </script>
+  )
+}

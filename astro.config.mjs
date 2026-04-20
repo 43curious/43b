@@ -15,8 +15,4 @@ export default defineConfig({
     locales: ["es", "en", "eu"],
   },
   output: "static",
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: "hover",
-  },
 });

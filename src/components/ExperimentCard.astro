@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { titleToIconShape } from "../lib/ascii-config";
 type Props = {
   experiments: CollectionEntry<"experiments">;
 };
@@ -9,9 +10,10 @@ const publishedAt = pubDate ?? updatedDate;
 const formattedDate = publishedAt
   ? new Date(publishedAt).toISOString().split("T")[0]
   : "";
+const shape = titleToIconShape(title);
 ---
 
-<a href={`/experiments/${experiments.id}`} class="experiment-row">
+<a href={`/experiments/${experiments.id}`} class="experiment-row" data-shape={shape}>
   <div class="row-content">
     <span class="title">{title}</span>
     {formattedDate && <span class="meta mono dim">{formattedDate}</span>}
